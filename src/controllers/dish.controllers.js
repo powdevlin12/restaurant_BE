@@ -1,4 +1,4 @@
-const { Dish } = require("../models");
+const { Dish, DishType } = require("../models");
 
 const createDish = async (req, res) => {
   try {
@@ -60,7 +60,52 @@ const updateDish = async (req, res) => {
   }
 };
 
+const getAllDishFilter = async (req, res) => {
+  try {
+    const type = req.query.type;
+    const limit = req.query.limit;
+    const page = req.query.page;
+    const order = req.query.order; //order price
+    const count = [limit * (page - 1), limit * page];
+    let result;
+
+    if (!type) {
+      result = await Dish.findAndCountAll({
+        offset: count[0],
+        limit: count[1] - count[0],
+        order: [["price", order]],
+        include: [{ model: DishType }],
+      });
+    } else {
+      result = await Dish.findAndCountAll({
+        where: {
+          dishTypeId: type,
+        },
+        offset: count[0],
+        limit: count[1] - count[0],
+        order: [["price", order]],
+        include: [{ model: DishType }],
+      });
+    }
+
+    let maxPage = Math.ceil(result.count / limit);
+    result.rows.forEach((element) => {
+      element.dataValues.type = element.dataValues.DishType.type;
+      delete element.dataValues.DishType;
+    });
+
+    res.status(200).json({
+      result,
+      isSuccess: true,
+      maxPage,
+    });
+  } catch (error) {
+    res.status(500).json({ isSuccess: false });
+  }
+};
+
 module.exports = {
   createDish,
   updateDish,
+  getAllDishFilter,
 };

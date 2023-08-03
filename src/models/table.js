@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasOne(models.Table_TableType, {
-        foreignKey: "tableId",
+      this.belongsTo(models.TableType, {
+        foreignKey: "tableTypeId",
       });
       // define association here
     }
@@ -27,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
+      available: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      }
     },
     {
       sequelize,

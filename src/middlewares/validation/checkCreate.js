@@ -30,7 +30,47 @@ const checkCreateDish = (Model) => {
       if (!dish) {
         next();
       } else {
-        res.status(400).json({ message: "Món đã tồn tại!" });
+        res.status(400).json({ isExist: true, message: "Món đã tồn tại!" });
+      }
+    };
+  } catch (error) {
+    res.status(501).json({ message: "Error!" });
+  }
+};
+
+const checkCreateService = (Model) => {
+  try {
+    return async (req, res, next) => {
+      const { name } = req.body;
+      const service = await Model.findOne({
+        where: {
+          name,
+        },
+      });
+      if (!service) {
+        next();
+      } else {
+        res.status(400).json({ isExist: true, message: "Dịch vụ đã tồn tại!" });
+      }
+    };
+  } catch (error) {
+    res.status(501).json({ message: "Error!" });
+  }
+};
+
+const checkCreateMenuFromManager = (Model) => {
+  try {
+    return async (req, res, next) => {
+      const { date } = req.params;
+      const menu = await Model.findOne({
+        where: {
+          date,
+        },
+      });
+      if (!menu) {
+        next();
+      } else {
+        res.status(400).json({ isExist: true, message: "Menu đã tồn tại!" });
       }
     };
   } catch (error) {
@@ -41,4 +81,6 @@ const checkCreateDish = (Model) => {
 module.exports = {
   checkCreateAccount,
   checkCreateDish,
+  checkCreateService,
+  checkCreateMenuFromManager,
 };

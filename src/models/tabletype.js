@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasOne(models.Table_TableType, {
+      this.hasOne(models.Table, {
         foreignKey: "tableTypeId",
       });
       // define association here

@@ -3,7 +3,11 @@ const { Dish } = require("../models");
 const { checkCreateDish } = require("../middlewares/validation/checkCreate");
 const { authenticate } = require("../middlewares/auth/authenticate.js");
 const { authorize } = require("../middlewares/auth/authorize.js");
-const { createDish, updateDish } = require("../controllers/dish.controllers");
+const {
+  createDish,
+  updateDish,
+  getAllDishFilter,
+} = require("../controllers/dish.controllers");
 const dishRouter = express.Router();
 
 dishRouter.post(
@@ -21,6 +25,8 @@ dishRouter.put(
   // checkCreateDish(Dish),
   updateDish
 );
+
+dishRouter.get("/get", authenticate, getAllDishFilter);
 
 module.exports = {
   dishRouter,
