@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.User, {
-        foreignKey: "userId",
+      this.belongsTo(models.Reservation, {
+        foreignKey: "reservationId",
       });
     }
   }
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      time: {
+      createAt: {
         type: DataTypes.DATE,
         allowNull: false,
       },

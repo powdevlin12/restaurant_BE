@@ -13,12 +13,15 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "accountId",
       });
 
-      this.hasOne(models.Message, {
+      this.hasMany(models.Message, {
         foreignKey: "receiveUserId",
       });
-      this.hasOne(models.Message, {
+      this.hasMany(models.Message, {
         foreignKey: "sendUserId",
       });
+      this.hasMany(models.Reservation, {
+        foreignKey: "userId",
+      })
     }
   }
   User.init(

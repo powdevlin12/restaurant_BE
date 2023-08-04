@@ -10,10 +10,16 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       // define association here
-      this.hasOne(models.Menu_User, {
+      this.hasMany(models.Menu_Reservation, {
         foreignKey: "reservationId",
       });
-      this.hasOne(models.Service_Reservation, {
+      this.hasMany(models.Service_Reservation, {
+        foreignKey: "reservationId",
+      });
+      this.hasMany(models.Table_Reservation, {
+        foreignKey: "reservationId",
+      });
+      this.hasOne(models.Invoice, {
         foreignKey: "reservationId",
       });
     }
@@ -27,6 +33,23 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       schedule: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      note: {
+        type: DataTypes.STRING,
+      },
+      status: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      preFee: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      createAt: {
         type: DataTypes.DATE,
         allowNull: false,
       },
