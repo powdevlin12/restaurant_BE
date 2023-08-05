@@ -105,6 +105,7 @@ const getAllTableByDate = async (req, res) => {
       } else {
         element.dataValues.available = 1; //trống
       }
+      delete element.dataValues.isDel;
     });
     res.status(500).json({
       isSuccess: true,

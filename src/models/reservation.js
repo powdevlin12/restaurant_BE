@@ -53,6 +53,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      managerNote: {
+        type: DataTypes.STRING,
+      }
     },
     {
       sequelize,

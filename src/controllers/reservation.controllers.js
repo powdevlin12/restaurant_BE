@@ -75,7 +75,7 @@ const makeMenuOfReservation = async (reservationId, dishes, transaction) => {
   };
 };
 
-const fillTableOfReservation = async (reservationId, tables, transaction) => {
+const makeTableOfReservation = async (reservationId, tables, transaction) => {
   let isSuccess = true;
   let msgFillTable = "";
   try {
@@ -108,7 +108,8 @@ const fillTableOfReservation = async (reservationId, tables, transaction) => {
 const createReservation = async (req, res) => {
   let msgReservation = "";
   try {
-    const { dishes, services, note, schedule, tables, preFee } = req.body;
+    const { dishes, services, note, schedule, tables, preFee, count } =
+      req.body;
     let now = new Date(Date.now());
     const account = req.account;
     const user = await User.findOne({
@@ -123,6 +124,7 @@ const createReservation = async (req, res) => {
         {
           userId: user.userId,
           schedule: schedule,
+          count: count,
           note: note,
           status: 0,
           preFee: preFee,
@@ -131,7 +133,7 @@ const createReservation = async (req, res) => {
         { transaction: transaction }
       );
       //fill table
-      let { isSuccess, msgFillTable } = await fillTableOfReservation(
+      let { isSuccess, msgFillTable } = await makeTableOfReservation(
         reservation.dataValues.reservationId,
         tables,
         transaction
@@ -198,7 +200,7 @@ const getAllReservationFilterByUser = async (req, res) => {
     const page = req.query.page;
     const order = req.query.order; //order: thứ tự ngày tạo đơn đặt bàn
     const count = [limit * (page - 1), limit * page];
-    let result;
+    let result; 
 
     if (!type) {
       result = await Reservation.findAndCountAll({
@@ -208,6 +210,7 @@ const getAllReservationFilterByUser = async (req, res) => {
         offset: count[0],
         limit: count[1] - count[0],
         order: [["createAt", order]],
+        attributes: ["reservationId", "schedule", "status", "count"],
       });
     } else {
       result = await Reservation.findAndCountAll({
@@ -218,14 +221,11 @@ const getAllReservationFilterByUser = async (req, res) => {
         offset: count[0],
         limit: count[1] - count[0],
         order: [["createAt", order]],
+        attributes: ["reservationId", "schedule", "status"],
       });
     }
 
     let maxPage = Math.ceil(result.count / limit);
-    // result.rows.forEach((element) => {
-    //   element.dataValues.type = element.dataValues.DishType.type;
-    //   delete element.dataValues.DishType;
-    // });
 
     res.status(200).json({
       result,
@@ -236,6 +236,14 @@ const getAllReservationFilterByUser = async (req, res) => {
     res.status(500).json({ isSuccess: false });
   }
 };
+
+const getDetailReservation = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    res.status(500).json({ isSuccess: false, msg: "Lỗi khi lấy thông tin đặt bàn!" });
+  }
+}
 
 module.exports = {
   createReservation,

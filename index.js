@@ -26,7 +26,7 @@ const listener = app.listen(PORT, async () => {
   console.log(`App listening on http://localhost:${PORT}`);
   try {
     await sequelize.authenticate();
-    console.log("Kết nối thành công!.");
+    console.log("Kết nối thành công!");
   } catch (error) {
     console.error("Kết nối thất bại:", error);
   }

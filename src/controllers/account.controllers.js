@@ -50,7 +50,7 @@ const login = async (req, res) => {
         },
       });
       const token = jwt.sign({ phone: account.phone }, "hehehe", {
-        expiresIn: 60 * 60 * 60,
+        expiresIn: 24 * 60 * 60,
       });
       const role = await Role.findOne({
         where: {
@@ -67,7 +67,7 @@ const login = async (req, res) => {
         },
         isSuccess: true,
         token,
-        expireTime: 60 * 60 * 60,
+        expireTime: 24 * 60 * 60,
       });
     } else {
       res.status(400).json({

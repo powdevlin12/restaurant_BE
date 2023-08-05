@@ -7,10 +7,9 @@ const { getAllTableByDate } = require("../controllers/table.controllers");
 const tableRouter = express.Router();
 
 tableRouter.get(
-  "/get/date",
-  authenticate,
-//   authorize(["manager"]),
-getAllTableByDate
+  "/get",
+  // authenticate,
+  getAllTableByDate
 );
 
 module.exports = {

@@ -84,8 +84,25 @@ const getMenuByDate = async (req, res) => {
       where: {
         date: date,
       },
+      attributes: ["price"],
+      include: [
+        {
+          model: Dish,
+          attributes: ["name", "description", "image"],
+        },
+      ],
+      raw: true,
+    });
+    menu = menu.map((element) => {
+      return {
+        name: element["Dish.name"],
+        description: element["Dish.description"],
+        image: element["Dish.image"],
+        price: element["price"],
+      };
     });
     res.status(200).json({
+      date,
       menu,
     });
   } catch (error) {

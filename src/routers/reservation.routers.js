@@ -13,7 +13,7 @@ const reservationRouter = express.Router();
 
 reservationRouter.post("/create", authenticate, createReservation);
 
-reservationRouter.get("/get", authenticate, getAllReservationFilterByUser);
+reservationRouter.get("/get/all", authenticate, getAllReservationFilterByUser);
 
 module.exports = {
   reservationRouter,

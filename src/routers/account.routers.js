@@ -15,7 +15,7 @@ const {
   verify,
 } = require("../controllers/account.controllers");
 
-accountRouter.post("/login", checkExistAccount(Account), login);
+accountRouter.post("/login", checkExistAccount(), login);
 accountRouter.get("/logout", authenticate, logout);
 accountRouter.post(
   "/create",
@@ -24,17 +24,17 @@ accountRouter.post(
 );
 accountRouter.post(
   "/forgotpassword",
-  checkExistAccount(Account),
+  checkExistAccount(),
   forgotPassword
 );
 accountRouter.post(
   "/forgotpassword/verify",
-  checkExistAccount(Account),
+  checkExistAccount(),
   verify
 );
 accountRouter.post(
   "/forgotpassword/verify/success",
-  checkExistAccount(Account),
+  checkExistAccount(),
   accessForgotPassword
 );
 accountRouter.put("/changepassword", authenticate, changePassword);

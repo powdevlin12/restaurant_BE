@@ -1,5 +1,5 @@
 const express = require("express");
-const {  Menu } = require("../models");
+const { Menu } = require("../models");
 const {
   checkCreateMenuFromManager,
 } = require("../middlewares/validation/checkCreate");
@@ -27,8 +27,12 @@ menuRouter.put(
   updateMenuFromManager
 );
 
-menuRouter.get("/:date", authenticate, getMenuByDate);
+menuRouter.get(
+  "/:date",
+  //  authenticate,
+  getMenuByDate
+);
 
 module.exports = {
-    menuRouter,
+  menuRouter,
 };
