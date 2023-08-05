@@ -94,17 +94,6 @@ const fillTableOfReservation = async (reservationId, tables, transaction) => {
         },
         { transaction: transaction }
       );
-      if (table.available === 0) {
-        table.available = 1;
-        await table.save({ transaction: transaction });
-      } else {
-        isSuccess = false;
-        msgFillTable = "Bàn " + tableId + " đã bị khóa hoặc không trống";
-        return {
-          isSuccess,
-          msgFillTable,
-        };
-      }
     }
   } catch (error) {
     isSuccess = false;
@@ -119,8 +108,8 @@ const fillTableOfReservation = async (reservationId, tables, transaction) => {
 const createReservation = async (req, res) => {
   let msgReservation = "";
   try {
-    const { dishes, services, note, schedule, tables, preFee, createAt } =
-      req.body;
+    const { dishes, services, note, schedule, tables, preFee } = req.body;
+    let now = new Date(Date.now());
     const account = req.account;
     const user = await User.findOne({
       where: {
@@ -133,11 +122,11 @@ const createReservation = async (req, res) => {
       const reservation = await Reservation.create(
         {
           userId: user.userId,
-          schedule: Date(schedule),
+          schedule: schedule,
           note: note,
           status: 0,
           preFee: preFee,
-          createAt: Date(createAt),
+          createAt: now,
         },
         { transaction: transaction }
       );
@@ -195,6 +184,60 @@ const createReservation = async (req, res) => {
   }
 };
 
+const getAllReservationFilterByUser = async (req, res) => {
+  try {
+    const account = req.account;
+    const user = await User.findOne({
+      where: {
+        accountId: account.accountId,
+      },
+      attributes: ["userId"],
+    });
+    const type = req.query.type; //type filer: lọc theo status của reservation, ko có => all
+    const limit = req.query.limit;
+    const page = req.query.page;
+    const order = req.query.order; //order: thứ tự ngày tạo đơn đặt bàn
+    const count = [limit * (page - 1), limit * page];
+    let result;
+
+    if (!type) {
+      result = await Reservation.findAndCountAll({
+        where: {
+          userId: user.userId,
+        },
+        offset: count[0],
+        limit: count[1] - count[0],
+        order: [["createAt", order]],
+      });
+    } else {
+      result = await Reservation.findAndCountAll({
+        where: {
+          status: type,
+          userId: user.userId,
+        },
+        offset: count[0],
+        limit: count[1] - count[0],
+        order: [["createAt", order]],
+      });
+    }
+
+    let maxPage = Math.ceil(result.count / limit);
+    // result.rows.forEach((element) => {
+    //   element.dataValues.type = element.dataValues.DishType.type;
+    //   delete element.dataValues.DishType;
+    // });
+
+    res.status(200).json({
+      result,
+      isSuccess: true,
+      maxPage,
+    });
+  } catch (error) {
+    res.status(500).json({ isSuccess: false });
+  }
+};
+
 module.exports = {
   createReservation,
+  getAllReservationFilterByUser,
 };

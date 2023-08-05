@@ -62,10 +62,10 @@ const updateDish = async (req, res) => {
 
 const getAllDishFilter = async (req, res) => {
   try {
-    const type = req.query.type;
+    const type = req.query.type; //type filer: lọc theo typeDish của dish, ko có => all
     const limit = req.query.limit;
     const page = req.query.page;
-    const order = req.query.order; //order price
+    const order = req.query.order; //order: thứ tự price
     const count = [limit * (page - 1), limit * page];
     let result;
 
@@ -90,7 +90,7 @@ const getAllDishFilter = async (req, res) => {
 
     let maxPage = Math.ceil(result.count / limit);
     result.rows.forEach((element) => {
-      element.dataValues.type = element.dataValues.DishType.type;
+      element.dataValues.dishType = element.dataValues.DishType.type;
       delete element.dataValues.DishType;
     });
 

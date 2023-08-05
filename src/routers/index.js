@@ -5,6 +5,7 @@ const { dishRouter } = require("./dish.routers");
 const { serviceRouter } = require("./service.router");
 const { menuRouter } = require("./menu.routers");
 const { reservationRouter } = require("./reservation.routers");
+const {tableRouter} = require("./table.routers");
 const rootRouter = express.Router();
 
 rootRouter.use("/account", accountRouter);
@@ -13,6 +14,7 @@ rootRouter.use("/service", serviceRouter);
 rootRouter.use("/menu", menuRouter);
 rootRouter.use("/user", userRouter);
 rootRouter.use("/reservation", reservationRouter);
+rootRouter.use("/table", tableRouter);
 
 module.exports = {
   rootRouter,

@@ -5,17 +5,15 @@ const express = require("express");
 // } = require("../middlewares/validation/checkCreate");
 const { authenticate } = require("../middlewares/auth/authenticate.js");
 const { authorize } = require("../middlewares/auth/authorize.js");
-const { createReservation } =
-  require("../controllers/reservation.controllers");
+const {
+  createReservation,
+  getAllReservationFilterByUser,
+} = require("../controllers/reservation.controllers");
 const reservationRouter = express.Router();
 
-reservationRouter.post(
-  "/create",
-  authenticate,
-  //   authorize(["manager"]),
-  //   checkCreateMenuFromManager(Menu),
-  createReservation
-);
+reservationRouter.post("/create", authenticate, createReservation);
+
+reservationRouter.get("/get", authenticate, getAllReservationFilterByUser);
 
 module.exports = {
   reservationRouter,
