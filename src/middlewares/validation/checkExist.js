@@ -1,25 +1,23 @@
 const { Account, User } = require("../../models");
+const { Op } = require("sequelize");
 
 const checkExistAccount = () => {
   return async (req, res, next) => {
     try {
-      const { phone } = req.body;
-      console.log(phone);
-      if (phone === "") {
+      const { login } = req.body;
+      console.log(login);
+      if (!login) {
         return res
           .status(400)
-          .json({ isSuccess: false, mes: "checkExistAccount1" });
+          .json({ isSuccess: false, mes: "Thiếu trường input" });
       }
-      if (isNaN(phone)) {
-        return res
-          .status(400)
-          .json({ isSuccess: false, mes: "checkExistAccount2" });
-      }
+
       const account = await Account.findOne({
         where: {
-          phone: phone,
+          [Op.or]: [{ phone: login }, { email: login }],
         },
       });
+
       if (!account) {
         return res
           .status(404)
@@ -41,14 +39,14 @@ const checkNotExistAccount = () => {
     try {
       console.log(1);
       //const staff = req.staff
-      const { phone } = req.body;
+      const { login } = req.body;
 
-      if (phone === "") {
+      if (login === "") {
         return res
           .status(400)
           .json({ isSuccess: false, mes: "checkNotExistAcc1" });
       }
-      if (isNaN(phone)) {
+      if (isNaN(login)) {
         return res
           .status(400)
           .json({ isSuccess: false, mes: "checkNotExistAcc2" });
@@ -56,7 +54,7 @@ const checkNotExistAccount = () => {
 
       const account = await Account.findOne({
         where: {
-          phone,
+          [Op.or]: [{ phone: login }, { email: login }],
         },
       });
 

@@ -15,7 +15,7 @@ const authorize = (role) => async (req, res, next) => {
       } else {
         return res
           .status(403)
-          .json({ message: "Bạn không có quyền sử dụng chức năng này!" });
+          .json({ msg: "Bạn không có quyền sử dụng chức năng này!" });
       }
     } else {
       if (account.dataValues.role >= role) {
@@ -27,11 +27,11 @@ const authorize = (role) => async (req, res, next) => {
       } else {
         return res
           .status(403)
-          .json({ message: "Bạn không có quyền sử dụng chức năng này!" });
+          .json({ msg: "Bạn không có quyền sử dụng chức năng này!" });
       }
     }
   } catch (error) {
-    return res.status(500).json({ error, message: "failed authorize" });
+    return res.status(500).json({ error, msg: "failed authorize" });
   }
 };
 

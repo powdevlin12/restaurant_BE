@@ -30,11 +30,11 @@ const checkCreateDish = (Model) => {
       if (!dish) {
         next();
       } else {
-        res.status(400).json({ isExist: true, message: "Món đã tồn tại!" });
+        res.status(400).json({ isExist: true, msg: "Món đã tồn tại!" });
       }
     };
   } catch (error) {
-    res.status(501).json({ message: "Error!" });
+    res.status(501).json({ msg: "Error!" });
   }
 };
 
@@ -50,11 +50,11 @@ const checkCreateService = (Model) => {
       if (!service) {
         next();
       } else {
-        res.status(400).json({ isExist: true, message: "Dịch vụ đã tồn tại!" });
+        res.status(400).json({ isExist: true, msg: "Dịch vụ đã tồn tại!" });
       }
     };
   } catch (error) {
-    res.status(501).json({ message: "Error!" });
+    res.status(501).json({ msg: "Error!" });
   }
 };
 
@@ -70,11 +70,11 @@ const checkCreateMenuFromManager = (Model) => {
       if (!menu) {
         next();
       } else {
-        res.status(400).json({ isExist: true, message: "Menu đã tồn tại!" });
+        res.status(400).json({ isExist: true, msg: "Menu đã tồn tại!" });
       }
     };
   } catch (error) {
-    res.status(501).json({ message: "Error!" });
+    res.status(501).json({ msg: "Error!" });
   }
 };
 

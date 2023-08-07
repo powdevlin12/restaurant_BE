@@ -2,13 +2,15 @@ const { Reservation, Dish, Service } = require("../models");
 
 const createDish = async (req, res) => {
   try {
-    const { name, description, price, image, dishTypeId } = req.body;
+    const { name, description, price, image, dishTypeId, isDrink, unit } = req.body;
     const newDish = await Dish.create({
       name: name,
       description: description,
       price: price,
       image: image,
       dishTypeId: dishTypeId,
+      isDrink: isDrink,
+      unit: unit,
     });
     res.status(200).json({
       isSuccess: true,
@@ -25,7 +27,8 @@ const createDish = async (req, res) => {
 const updateDish = async (req, res) => {
   try {
     const { dishId } = req.params;
-    const { name, description, price, image, dishTypeId, isDel } = req.body;
+    const { name, description, price, image, dishTypeId, isDel, isDrink, unit } =
+      req.body;
     const dish = await Dish.findOne({
       where: {
         dishId: dishId,
@@ -38,7 +41,10 @@ const updateDish = async (req, res) => {
     dish.image = image;
     dish.dishTypeId = dishTypeId;
     dish.isDel = isDel;
+    dish.isDrink = isDrink;
+    dish.unit = unit;
     await dish.save();
+    
     res.status(200).json({
       isSuccess: true,
       msg: "Cập nhật món thành công",

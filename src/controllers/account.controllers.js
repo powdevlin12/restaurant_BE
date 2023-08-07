@@ -1,16 +1,18 @@
 const { Account, User, Role } = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const {Op} = require("sequelize");
 
 const createAccountForClient = async (req, res) => {
   try {
-    const { phone, password, userName, gender, address, birthDay } = req.body;
+    const { phone, email, password, userName, gender, address, birthDay } = req.body;
     //tạo ra một chuỗi ngẫu nhiên
     const salt = bcrypt.genSaltSync(10);
     //mã hóa salt + password
     const hashPassword = bcrypt.hashSync(password, salt);
     const newAccount = await Account.create({
       phone: phone,
+      email: email,
       password: hashPassword,
       roleId: 3, //client
     });
@@ -36,10 +38,13 @@ const createAccountForClient = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { login, password } = req.body;
     const account = await Account.findOne({
       where: {
-        phone,
+       [Op.or] : [
+        {phone: login},
+        {email: login},
+       ]
       },
     });
     const isAuth = bcrypt.compareSync(password, account.password);
@@ -58,15 +63,15 @@ const login = async (req, res) => {
         },
       });
       res.status(200).json({
-        user: {
-          userName: user.userName,
-          address: user.address,
-          birthDay: user.birthDay,
-          gender: user.gender,
-          role: role.name,
-        },
+        userId: user.userId,
+        userName: user.userName,
+        address: user.address,
+        birthDay: user.birthDay,
+        gender: user.gender,
+        role: role.name,
+        roleId: role.roleId,
         isSuccess: true,
-        token,
+        accessToken: token,
         expireTime: 24 * 60 * 60,
       });
     } else {
@@ -202,12 +207,12 @@ const verify = async (req, res, next) => {
   });
   if (account) {
     res.status(200).json({
-      message: `Mã xác nhận chính xác!`,
+      msg: `Mã xác nhận chính xác!`,
       isSuccess: true,
     });
   } else {
     res.status(400).json({
-      message: `Mã xác nhận không chính xác!`,
+      msg: `Mã xác nhận không chính xác!`,
       isSuccess: false,
     });
   }
@@ -217,7 +222,7 @@ const accessForgotPassword = async (req, res, next) => {
   const { mail, password, repeatPassword } = req.body;
   if (password != repeatPassword) {
     res.status(400).json({
-      message: `Mật khẩu lặp lại không chính xác!`,
+      msg: `Mật khẩu lặp lại không chính xác!`,
       isSuccess: false,
     });
   } else {
@@ -235,12 +240,12 @@ const accessForgotPassword = async (req, res, next) => {
 
       await accountUpdate.save();
       res.status(200).json({
-        message: `Lấy lại mật khẩu thành công!`,
+        msg: `Lấy lại mật khẩu thành công!`,
         isSuccess: true,
       });
     } catch (error) {
       res.status(500).json({
-        message: `Lấy lại mật khẩu thất bại!`,
+        msg: `Lấy lại mật khẩu thất bại!`,
         isSuccess: false,
       });
     }

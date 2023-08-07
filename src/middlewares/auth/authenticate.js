@@ -7,7 +7,7 @@ const authenticate = async (req, res, next) => {
     if (!token) {
       return res
         .status(400)
-        .json({ message: "Vui lòng đăng nhập!", isSuccess: false });
+        .json({ msg: "Vui lòng đăng nhập!", isSuccess: false });
     }
 
     const data = jwt.verify(token, "hehehe");
@@ -22,7 +22,7 @@ const authenticate = async (req, res, next) => {
   } catch {
     return res
       .status(403)
-      .json({ message: "Vui lòng đăng nhập!", isSuccess: false });
+      .json({ msg: "Vui lòng đăng nhập!", isSuccess: false });
   }
 };
 

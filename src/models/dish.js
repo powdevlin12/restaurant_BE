@@ -48,6 +48,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0, //0: ko xóa, 1: xóa
       },
+      isDrink: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      unit: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      }
     },
     {
       sequelize,
