@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
+const nodemailer = require("nodemailer");
 
 const createClientWithTransaction = async (
   phone,
@@ -39,6 +40,8 @@ const createClientWithTransaction = async (
       },
       { transaction: t }
     );
+    console.log(1);
+
     const randomID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -49,6 +52,8 @@ const createClientWithTransaction = async (
         pass: "bqztpfkmmbpzmdxl", // generated ethereal password
       },
     });
+    console.log(2);
+
     // send mail with defined transport object
     await transporter.sendMail({
       // from: '"Firestaurant 👻"<n19dccn038@student.ptithcm.edu.vn>', // sender address
@@ -58,7 +63,7 @@ const createClientWithTransaction = async (
       text: "VERIFY OTP", // plain text body
       html: `Mã xác nhận của bạn là: ${randomID}`, // html body
     });
-
+    console.log(3);
     newAccount.otp = randomID;
     await newAccount.save({ transaction: t });
     await t.commit(); // Lưu thay đổi và kết thúc transaction
