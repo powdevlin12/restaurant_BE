@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
+      countGuest: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       schedule: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -55,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       managerNote: {
         type: DataTypes.STRING,
-      }
+      },
     },
     {
       sequelize,

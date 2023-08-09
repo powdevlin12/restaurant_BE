@@ -200,7 +200,7 @@ const getAllReservationFilterByUser = async (req, res) => {
     const page = req.query.page;
     const order = req.query.order; //order: thứ tự ngày tạo đơn đặt bàn
     const count = [limit * (page - 1), limit * page];
-    let result; 
+    let result;
 
     if (!type) {
       result = await Reservation.findAndCountAll({
@@ -239,13 +239,66 @@ const getAllReservationFilterByUser = async (req, res) => {
 
 const getDetailReservation = async (req, res) => {
   try {
-    
+    let { reservationId } = req.params;
+    let reservation = await Reservation.findOne({
+      where: {
+        reservationId: reservationId,
+      },
+    });
+    reservation.dataValues.preFeeStr =
+      reservation.dataValues.preFee.toLocaleString();
+    let menuReservation = await Menu_Reservation.findAll({
+      where: {
+        reservationId: reservation.reservationId,
+      },
+      attributes: ["dishId", "price", "order"],
+      include: [
+        {
+          model: Dish,
+          attributes: ["name", "description", "image", "isDrink", "unit"],
+        },
+      ],
+    });
+    reservation.dataValues.menus = menuReservation;
+    reservation.dataValues.menus.forEach((element) => {
+      element.dataValues.name = element.dataValues.Dish.name;
+      element.dataValues.priceStr = element.dataValues.price.toLocaleString();
+      element.dataValues.description = element.dataValues.Dish.description;
+      element.dataValues.image = element.dataValues.Dish.image;
+      element.dataValues.unit = element.dataValues.Dish.unit;
+      element.dataValues.isDrink = element.dataValues.Dish.isDrink;
+      delete element.dataValues.Dish;
+    });
+    let tableReservation = await Table_Reservation.findAll({
+      where: {
+        reservationId: reservation.reservationId,
+      },
+      attributes: ["tableId"],
+      include: [
+        {
+          model: Table,
+          attributes: ["name", "tableTypeId"],
+        },
+      ],
+    });
+    reservation.dataValues.tables = tableReservation;
+    reservation.dataValues.tables.forEach((element) => {
+      element.dataValues.name = element.dataValues.Table.name;
+      delete element.dataValues.Table;
+    });
+    res.status(200).json({
+      isSuccess: true,
+      reservation: reservation,
+    });
   } catch (error) {
-    res.status(500).json({ isSuccess: false, msg: "Lỗi khi lấy thông tin đặt bàn!" });
+    res
+      .status(500)
+      .json({ isSuccess: false, msg: "Lỗi khi lấy thông tin đặt bàn!" });
   }
-}
+};
 
 module.exports = {
   createReservation,
   getAllReservationFilterByUser,
+  getDetailReservation,
 };

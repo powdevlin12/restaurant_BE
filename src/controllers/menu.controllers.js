@@ -1,6 +1,6 @@
 const { Menu, Dish } = require("../models");
 
-const createMenuFromManager = async (req, res) => {
+const createMenuByManager = async (req, res) => {
   try {
     const { date } = req.params;
     let { menu } = req.body;
@@ -31,7 +31,7 @@ const createMenuFromManager = async (req, res) => {
   }
 };
 
-const updateMenuFromManager = async (req, res) => {
+const updateMenuByManager = async (req, res) => {
   try {
     const { date } = req.params;
     let { menu } = req.body;
@@ -114,7 +114,7 @@ const getMenuByDate = async (req, res) => {
 };
 
 module.exports = {
-  createMenuFromManager,
-  updateMenuFromManager,
+  createMenuByManager,
+  updateMenuByManager,
   getMenuByDate,
 };

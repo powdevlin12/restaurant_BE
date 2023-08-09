@@ -58,7 +58,7 @@ const checkCreateService = (Model) => {
   }
 };
 
-const checkCreateMenuFromManager = (Model) => {
+const checkcreateMenuByManager = (Model) => {
   try {
     return async (req, res, next) => {
       const { date } = req.params;
@@ -82,5 +82,5 @@ module.exports = {
   checkCreateAccount,
   checkCreateDish,
   checkCreateService,
-  checkCreateMenuFromManager,
+  checkcreateMenuByManager,
 };
