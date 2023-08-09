@@ -1,19 +1,29 @@
+const { Op } = require("sequelize");
+
 const checkCreateAccount = (Model) => {
   return async (req, res, next) => {
     try {
-      const { phone } = req.body;
+      const { phone, email } = req.body;
       const account = await Model.findOne({
         where: {
-          phone,
+          [Op.or]: [{ phone: phone }, { email: email }],
         },
       });
       if (!account) {
         next();
       } else {
-        res.status(409).json({ isExist: true, isSuccess: false });
+        res
+          .status(409)
+          .json({
+            isExist: true,
+            isSuccess: false,
+            msg: "Số điện thoại hoặc email đã được sử dụng",
+          });
       }
     } catch (error) {
-      res.status(500).json({ isExist: false, isSuccess: false });
+      res
+        .status(500)
+        .json({ isExist: false, isSuccess: false, msg: "Lỗi tạo tài khoản" });
     }
   };
 };

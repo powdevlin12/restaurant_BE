@@ -11,11 +11,14 @@ const authenticate = async (req, res, next) => {
     }
 
     const data = jwt.verify(token, "hehehe");
-
     const account = await Account.findOne({
       where: { phone: data.phone },
-      attributes: ["accountId", "phone", "roleId"],
     });
+    if (account.verified === false) {
+      return res
+        .status(403)
+        .json({ msg: "Tài khoản chưa được xác thực!", isSuccess: false });
+    }
     req.account = account;
 
     return next();

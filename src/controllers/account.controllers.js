@@ -1,37 +1,125 @@
 const { Account, User, Role } = require("../models");
 const bcrypt = require("bcryptjs");
+const db = require("../models/index");
 const jwt = require("jsonwebtoken");
-const {Op} = require("sequelize");
+const { Op } = require("sequelize");
 
-const createAccountForClient = async (req, res) => {
+const createClientWithTransaction = async (
+  phone,
+  password,
+  userName,
+  email,
+  gender,
+  address,
+  birthDay
+) => {
+  const t = await db.sequelize.transaction();
+  let isSuccess;
   try {
-    const { phone, email, password, userName, gender, address, birthDay } = req.body;
     //tạo ra một chuỗi ngẫu nhiên
     const salt = bcrypt.genSaltSync(10);
     //mã hóa salt + password
     const hashPassword = bcrypt.hashSync(password, salt);
-    const newAccount = await Account.create({
-      phone: phone,
-      email: email,
-      password: hashPassword,
-      roleId: 3, //client
+    const newAccount = await Account.create(
+      {
+        phone,
+        email,
+        password: hashPassword,
+        roleId: 3, //client
+      },
+      { transaction: t }
+    );
+    const newClient = await User.create(
+      {
+        accountId: newAccount.accountId,
+        userName: userName,
+        gender: gender,
+        address: address,
+        birthday: birthDay,
+      },
+      { transaction: t }
+    );
+    const randomID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // true for port 465, false for other ports
+      auth: {
+        user: "n19dccn107@student.ptithcm.edu.vn", // generated ethereal user
+        pass: "bqztpfkmmbpzmdxl", // generated ethereal password
+      },
     });
-    const newClient = await User.create({
-      accountId: newAccount.accountId,
-      userName: userName,
-      gender: gender,
-      address: address,
-      birthDay: birthDay,
+    // send mail with defined transport object
+    await transporter.sendMail({
+      // from: '"Firestaurant 👻"<n19dccn038@student.ptithcm.edu.vn>', // sender address
+      from: "n19dccn107@student.ptithcm.edu.vn", // sender address
+      to: `${email}`, // list of receivers
+      subject: "VERIFY OTP", // Subject line
+      text: "VERIFY OTP", // plain text body
+      html: `Mã xác nhận của bạn là: ${randomID}`, // html body
     });
 
-    res.status(200).json({
-      isExist: false,
-      isSuccess: true,
-    });
+    newAccount.otp = randomID;
+    await newAccount.save({ transaction: t });
+    await t.commit(); // Lưu thay đổi và kết thúc transaction
+    isSuccess = true;
+  } catch (error) {
+    isSuccess = false;
+    await t.rollback();
+  }
+  return isSuccess;
+};
+
+const createAccountForClient = async (req, res) => {
+  try {
+    const { phone, email, password, userName, gender, address, birthDay } =
+      req.body;
+    if (
+      phone === "" ||
+      password === "" ||
+      userName === "" ||
+      email === "" ||
+      gender === "" ||
+      address === "" ||
+      birthDay === "" ||
+      !phone ||
+      !password ||
+      !userName ||
+      !email ||
+      !gender ||
+      !address ||
+      !birthDay
+    ) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: "Cần nhập đủ các trường cần thiết!",
+      });
+    }
+
+    let isSuccess = await createClientWithTransaction(
+      phone,
+      password,
+      userName,
+      email,
+      gender,
+      address,
+      birthDay
+    );
+    if (isSuccess) {
+      res.status(200).json({
+        isSuccess: true,
+        msg: `Mã xác minh đã được gửi về email: ${email} vui lòng kiểm tra hòm thư!`,
+      });
+    } else {
+      res.status(500).json({
+        isSuccess: false,
+        msg: "Lỗi đăng ký tài khoản!",
+      });
+    }
   } catch (error) {
     res.status(500).json({
-      isExist: true,
       isSuccess: false,
+      msg: "Lỗi đăng ký tài khoản!",
     });
   }
 };
@@ -41,10 +129,7 @@ const login = async (req, res) => {
     const { login, password } = req.body;
     const account = await Account.findOne({
       where: {
-       [Op.or] : [
-        {phone: login},
-        {email: login},
-       ]
+        [Op.or]: [{ phone: login }, { email: login }],
       },
     });
     const isAuth = bcrypt.compareSync(password, account.password);

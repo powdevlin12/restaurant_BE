@@ -44,9 +44,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: { model: "Role", key: "roleId" },
       },
-      forgot: {
+      otp: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      verified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0,
       },
     },
     {
