@@ -48,16 +48,16 @@ const createClientWithTransaction = async (
       port: 587,
       secure: false, // true for port 465, false for other ports
       auth: {
-        user: "n19dccn107@student.ptithcm.edu.vn", // generated ethereal user
-        pass: "bqztpfkmmbpzmdxl", // generated ethereal password
+        user: "n19dccn038@student.ptithcm.edu.vn", // generated ethereal user
+        pass: "fxysqktsjuembqvu", // generated ethereal password
       },
     });
     console.log(2);
 
     // send mail with defined transport object
     await transporter.sendMail({
-      // from: '"Firestaurant 👻"<n19dccn038@student.ptithcm.edu.vn>', // sender address
-      from: "n19dccn107@student.ptithcm.edu.vn", // sender address
+      from: '"Firestaurant 👻"<n19dccn038@student.ptithcm.edu.vn>', // sender address
+      // from: "n19dccn107@student.ptithcm.edu.vn", // sender address
       to: `${email}`, // list of receivers
       subject: "VERIFY OTP", // Subject line
       text: "VERIFY OTP", // plain text body
@@ -86,16 +86,9 @@ const createAccountForClient = async (req, res) => {
       email === "" ||
       gender === "" ||
       address === "" ||
-      birthDay === "" ||
-      !phone ||
-      !password ||
-      !userName ||
-      !email ||
-      !gender ||
-      !address ||
-      !birthDay
+      birthDay === ""
     ) {
-      return res.status(400).json({
+      res.status(400).json({
         isSuccess: false,
         msg: "Cần nhập đủ các trường cần thiết!",
       });
@@ -113,7 +106,7 @@ const createAccountForClient = async (req, res) => {
     if (isSuccess) {
       res.status(200).json({
         isSuccess: true,
-        msg: `Mã xác minh đã được gửi về email: ${email} vui lòng kiểm tra hòm thư!`,
+        msg: `Mã xác minh đã được gửi về email: ${email}! Vui lòng kiểm tra hòm thư!`,
       });
     } else {
       res.status(500).json({
@@ -287,22 +280,33 @@ const forgotPassword = async (req, res) => {
 };
 
 const verify = async (req, res, next) => {
-  const { verifyId, phone } = req.body;
-  const account = await Account.findOne({
-    where: {
-      forgot: verifyId,
-      phone,
-    },
-    raw: true,
-  });
-  if (account) {
-    res.status(200).json({
-      msg: `Mã xác nhận chính xác!`,
-      isSuccess: true,
+  try {
+    const { verifyOTP, login } = req.body;
+    console.log("verifyOTP", verifyOTP);
+    var account = await Account.findOne({
+      where: {
+        otp: verifyOTP,
+        [Op.or]: [{ phone: login }, { email: login }],
+      },
+      raw: true,
     });
-  } else {
-    res.status(400).json({
-      msg: `Mã xác nhận không chính xác!`,
+    console.log(account);
+    if (account) {
+      account.verified = 1;
+      await account.save();
+      res.status(200).json({
+        msg: `Mã xác nhận chính xác!`,
+        isSuccess: true,
+      });
+    } else {
+      res.status(400).json({
+        msg: `Mã xác nhận không chính xác!`,
+        isSuccess: false,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      msg: `Lỗi khi xác thực!`,
       isSuccess: false,
     });
   }
