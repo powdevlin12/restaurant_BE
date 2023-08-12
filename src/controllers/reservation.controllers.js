@@ -7,8 +7,10 @@ const {
   Dish,
   Service,
   Service_Reservation,
+  TableType,
 } = require("../models");
 const db = require("../models/index");
+const { Op } = require("sequelize");
 
 const makeServiceOfReservation = async (
   reservationId,
@@ -17,6 +19,7 @@ const makeServiceOfReservation = async (
 ) => {
   let isSuccess3 = true;
   msgMakeService = "";
+  let preFeeService = 0;
   try {
     services = services.split(",").map(Number);
     for (let serviceId of services) {
@@ -29,9 +32,11 @@ const makeServiceOfReservation = async (
         {
           reservationId: reservationId,
           serviceId: service.serviceId,
+          price: service.price,
         },
         { transaction: transaction }
       );
+      preFeeService += serviceReservation.price;
     }
   } catch (error) {
     isSuccess3 = false;
@@ -40,12 +45,14 @@ const makeServiceOfReservation = async (
   return {
     isSuccess3,
     msgMakeService,
+    preFeeService,
   };
 };
 
 const makeMenuOfReservation = async (reservationId, dishes, transaction) => {
   let isSuccess2 = true;
   let msgMakeMenu = "";
+  let preFeeMenu = 0;
   try {
     dishes = dishes.split(",").map(Number);
 
@@ -64,6 +71,7 @@ const makeMenuOfReservation = async (reservationId, dishes, transaction) => {
         },
         { transaction: transaction }
       );
+      preFeeMenu += menuReservation.price;
     }
   } catch (error) {
     isSuccess2 = false;
@@ -72,19 +80,103 @@ const makeMenuOfReservation = async (reservationId, dishes, transaction) => {
   return {
     isSuccess2,
     msgMakeMenu,
+    preFeeMenu,
   };
 };
 
-const makeTableOfReservation = async (reservationId, tables, transaction) => {
+const makeTableOfReservation = async (
+  reservationId,
+  tableTypeId,
+  schedule,
+  countGuest,
+  transaction
+) => {
   let isSuccess = true;
   let msgFillTable = "";
+  let preFeeTable = 0;
   try {
-    tables = tables.split(",").map(Number);
-
-    for (let tableId of tables) {
+    schedule = new Date(schedule);
+    // trên dưới 4h tính từ thời gian truyền vào,
+    // những table nào trống => available
+    let startSchedule = new Date(schedule.getTime() - 4 * 60 * 60 * 1000);
+    let endSchedule = new Date(schedule.getTime() + 4 * 60 * 60 * 1000);
+    // console.log("datetime", schedule);
+    // console.log("startDateTime:", startSchedule);
+    // console.log("endDateTime:", endSchedule);
+    let countTable = Math.ceil(countGuest / 4);
+    let reservations;
+    let tables, tableReservations;
+    // Truy vấn tất cả những reservation, và table thỏa điều kiện
+    reservations = await Reservation.findAll({
+      where: {
+        schedule: {
+          [Op.between]: [startSchedule, endSchedule], //tìm những reservation mà thời gian diễn ra nằm trong khoảng này
+        },
+        [Op.not]: [{ status: [-1, -2] }],
+      },
+    });
+    tables = await Table.findAll({
+      where: {
+        tableTypeId: tableTypeId,
+      },
+      include: [{ model: TableType }],
+    });
+    //khai báo array chứa reservationIdOfReservations
+    let reservationIdOfReservations = [];
+    for (let element of reservations) {
+      // console.log(reservations.indexOf(reservation), reservation.dataValues);
+      //kiểm tra chưa tồn tại trong array thì push reservationId vào
+      if (
+        !reservationIdOfReservations.includes(element.dataValues.reservationId)
+      ) {
+        reservationIdOfReservations.push(element.dataValues.reservationId);
+      }
+    }
+    // for (let reservationId of reservationIdOfReservations) {
+    //   console.log(
+    //     reservationIdOfReservations.indexOf(reservationId),
+    //     reservationId
+    //   );
+    // }
+    // for (let table of tables) {
+    //   console.log(tables.indexOf(table), table.dataValues);
+    // }
+    // tìm những Table_Reservation có các reservationId trong array reservationIdOfReservations
+    tableReservations = await Table_Reservation.findAll({
+      where: {
+        reservationId: reservationIdOfReservations,
+      },
+    });
+    let tableIdOfTableReservations = [];
+    for (let element of tableReservations) {
+      if (!tableIdOfTableReservations.includes(element.dataValues.tableId)) {
+        tableIdOfTableReservations.push(element.dataValues.tableId);
+      }
+    }
+    // for (let element of tableIdOfTableReservations) {
+    //   console.log(tableIdOfTableReservations.indexOf(element), element);
+    // }
+    let needTables = [];
+    for (let element of tables) {
+      if (tableIdOfTableReservations.includes(element.dataValues.tableId)) {
+        //nếu element nằm trong những tabledId của tableIdOfTableReservations thì ko push
+      } else {
+        needTables.push(element);
+      }
+      if (needTables.length == countTable) {
+        break;
+      }
+    }
+    if (needTables.length < countTable) {
+      return {
+        isSuccess: false,
+        msgFillTable: "Không đủ bàn! Hãy thử loại bàn khác!",
+      };
+    }
+    for (let element of needTables) {
       let table = await Table.findOne({
         where: {
-          tableId: tableId,
+          tableId: element.tableId,
         },
       });
       const tableReservation = await Table_Reservation.create(
@@ -94,21 +186,24 @@ const makeTableOfReservation = async (reservationId, tables, transaction) => {
         },
         { transaction: transaction }
       );
+      preFeeTable += element.dataValues.TableType.fee;
     }
   } catch (error) {
     isSuccess = false;
-    msgFillTable = "Thất bại đặt bàn!";
+    msgFillTable = "Lỗi khi đặt bàn!";
   }
   return {
     isSuccess,
     msgFillTable,
+    preFeeTable,
   };
 };
 
 const createReservation = async (req, res) => {
   let msgReservation = "";
+  let preFee = 0;
   try {
-    const { dishes, services, note, schedule, tables, preFee, count } =
+    const { dishes, services, note, schedule, tableTypeId, countGuest } =
       req.body;
     let now = new Date(Date.now());
     const account = req.account;
@@ -124,48 +219,62 @@ const createReservation = async (req, res) => {
         {
           userId: user.userId,
           schedule: schedule,
-          count: count,
+          countGuest: countGuest,
           note: note,
-          status: 0,
-          preFee: preFee,
+          status: -2,
           createAt: now,
         },
         { transaction: transaction }
       );
-      //fill table
-      let { isSuccess, msgFillTable } = await makeTableOfReservation(
-        reservation.dataValues.reservationId,
-        tables,
-        transaction
-      );
-      //   console.log(isSuccess, msgFillTable);
+      //check available & fill table
+      let { isSuccess, msgFillTable, preFeeTable } =
+        await makeTableOfReservation(
+          reservation.dataValues.reservationId,
+          tableTypeId,
+          schedule,
+          countGuest,
+          transaction
+        );
       if (!isSuccess) {
         msgReservation = msgFillTable;
         throw new Error();
+      } else {
+        preFee += preFeeTable;
       }
       //make menu
-      let { isSuccess2, msgMakeMenu } = await makeMenuOfReservation(
+      let { isSuccess2, msgMakeMenu, preFeeMenu } = await makeMenuOfReservation(
         reservation.dataValues.reservationId,
         dishes,
         transaction
       );
-      //   console.log(isSuccess2, msgMakeMenu);
       if (!isSuccess2) {
         msgReservation = msgMakeMenu;
         throw new Error();
+      } else {
+        preFee += preFeeMenu;
       }
       if (services) {
-        let { isSuccess3, msgMakeService } = await makeServiceOfReservation(
-          reservation.dataValues.reservationId,
-          services,
-          transaction
-        );
-        // console.log(isSuccess3, msgMakeService);
+        let { isSuccess3, msgMakeService, preFeeService } =
+          await makeServiceOfReservation(
+            reservation.dataValues.reservationId,
+            services,
+            transaction
+          );
         if (!isSuccess3) {
           msgReservation = msgMakeService;
           throw new Error();
+        } else {
+          preFee += preFeeService;
         }
       }
+      // nếu tổng tiền >= 1000000 thì lấy 30%, ko thì ko tính
+      if (preFee >= 1000000) {
+        preFee = Math.ceil(preFee * 0.3);
+      } else {
+        preFee = 0;
+      }
+      reservation.preFee = preFee;
+      await reservation.save({transaction: transaction});
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();
@@ -177,6 +286,7 @@ const createReservation = async (req, res) => {
     res.status(200).json({
       isSuccess: true,
       msg: "Đặt bàn thành công",
+      preFee,
     });
   } catch (error) {
     res.status(500).json({

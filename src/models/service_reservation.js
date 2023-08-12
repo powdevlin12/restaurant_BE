@@ -37,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
           key: "serviceId",
         },
       },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
     {
       sequelize,

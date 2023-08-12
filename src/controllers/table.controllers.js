@@ -24,11 +24,7 @@ const getAllTableByDate = async (req, res) => {
           schedule: {
             [Op.between]: [startDateTime, endDateTime], //tìm những reservation mà thời gian diễn ra nằm trong khoảng này
           },
-          [Op.not]: [
-            {
-              status: -1, //không lấy đơn đặt bàn bị từ chối
-            },
-          ],
+          [Op.not]: [{ status: [-1, -2] }],
         },
       });
       tables = await Table.findAll();
@@ -38,11 +34,7 @@ const getAllTableByDate = async (req, res) => {
           schedule: {
             [Op.between]: [startDateTime, endDateTime], //tìm những reservation mà thời gian diễn ra nằm trong khoảng này
           },
-          [Op.not]: [
-            {
-              status: -1, //không lấy đơn đặt bàn bị từ chối
-            },
-          ],
+          [Op.not]: [{ status: [-1, -2] }],
         },
       });
       tables = await Table.findAll({
