@@ -23,6 +23,11 @@ const checkExistAccount = () => {
           .status(404)
           .send({ isSuccess: false, mes: "Tài khoản không tồn tại" });
       } else {
+        if (account.verified === false) {
+          return res
+            .status(403)
+            .json({ msg: "Tài khoản chưa được xác thực!", isSuccess: false });
+        }
         next();
       }
     } catch (error) {

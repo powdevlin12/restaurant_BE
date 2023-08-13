@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.Invoice, {
         foreignKey: "reservationId",
       });
+      this.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
     }
   }
   Reservation.init(

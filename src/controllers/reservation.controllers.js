@@ -274,7 +274,7 @@ const createReservation = async (req, res) => {
         preFee = 0;
       }
       reservation.preFee = preFee;
-      await reservation.save({transaction: transaction});
+      await reservation.save({ transaction: transaction });
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();
@@ -305,45 +305,101 @@ const getAllReservationFilterByUser = async (req, res) => {
       },
       attributes: ["userId"],
     });
-    const type = req.query.type; //type filer: lọc theo status của reservation, ko có => all
+    const status = req.query.status; //status filer: lọc theo status của reservation, ko có => all
     const limit = req.query.limit;
     const page = req.query.page;
     const order = req.query.order; //order: thứ tự ngày tạo đơn đặt bàn
     const count = [limit * (page - 1), limit * page];
     let result;
-
-    if (!type) {
-      result = await Reservation.findAndCountAll({
-        where: {
-          userId: user.userId,
-        },
-        offset: count[0],
-        limit: count[1] - count[0],
-        order: [["createAt", order]],
-        attributes: ["reservationId", "schedule", "status", "count"],
-      });
+    if (account.roleId == 3) {
+      //nếu role là client thì chỉ lấy những reservation thuộc user đó
+      if (!status) {
+        result = await Reservation.findAndCountAll({
+          where: {
+            userId: user.userId,
+          },
+          offset: count[0],
+          limit: count[1] - count[0],
+          order: [["createAt", order]],
+          attributes: [
+            "reservationId",
+            "schedule",
+            "status",
+            "countGuest",
+            "createAt",
+          ],
+        });
+      } else {
+        result = await Reservation.findAndCountAll({
+          where: {
+            status: status,
+            userId: user.userId,
+          },
+          offset: count[0],
+          limit: count[1] - count[0],
+          order: [["createAt", order]],
+          attributes: [
+            "reservationId",
+            "schedule",
+            "status",
+            "countGuest",
+            "createAt",
+          ],
+        });
+      }
     } else {
-      result = await Reservation.findAndCountAll({
-        where: {
-          status: type,
-          userId: user.userId,
-        },
-        offset: count[0],
-        limit: count[1] - count[0],
-        order: [["createAt", order]],
-        attributes: ["reservationId", "schedule", "status"],
-      });
+      //là manager hoặc admin thì lấy toàn bộ
+      if (!status) {
+        result = await Reservation.findAndCountAll({
+          offset: count[0],
+          limit: count[1] - count[0],
+          order: [["createAt", order]],
+          attributes: [
+            "reservationId",
+            "schedule",
+            "status",
+            "countGuest",
+            "createAt",
+          ],
+          include: [{ model: User, attributes: ["userId", "userName"] }],
+        });
+      } else {
+        result = await Reservation.findAndCountAll({
+          where: {
+            status: status,
+          },
+          offset: count[0],
+          limit: count[1] - count[0],
+          order: [["createAt", order]],
+          attributes: [
+            "reservationId",
+            "schedule",
+            "status",
+            "countGuest",
+            "createAt",
+          ],
+          include: [{ model: User, attributes: ["userId", "userName"] }],
+        });
+      }
+    }
+
+    for (let element of result.rows) {
+      element.dataValues.user = element.dataValues.User;
+      delete element.dataValues.User;
     }
 
     let maxPage = Math.ceil(result.count / limit);
-
+    let total = result.count;
+    delete result.count;
     res.status(200).json({
-      result,
       isSuccess: true,
       maxPage,
+      total: total,
+      currentPage: page,
+      result,
     });
   } catch (error) {
-    res.status(500).json({ isSuccess: false });
+    res.status(500).json({ isSuccess: false, msg: "Thất bại!" });
   }
 };
 

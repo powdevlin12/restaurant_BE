@@ -40,8 +40,6 @@ const createClientWithTransaction = async (
       },
       { transaction: t }
     );
-    console.log(1);
-
     const randomID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -52,8 +50,6 @@ const createClientWithTransaction = async (
         pass: "fxysqktsjuembqvu", // generated ethereal password
       },
     });
-    console.log(2);
-
     // send mail with defined transport object
     await transporter.sendMail({
       from: '"Firestaurant 👻"<n19dccn038@student.ptithcm.edu.vn>', // sender address
