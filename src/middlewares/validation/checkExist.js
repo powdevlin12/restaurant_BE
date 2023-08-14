@@ -9,7 +9,7 @@ const checkExistAccount = () => {
       if (!login) {
         return res
           .status(400)
-          .json({ isSuccess: false, mes: "Thiếu trường input" });
+          .json({ isSuccess: false, msg: "Thiếu trường input" });
       }
 
       const account = await Account.findOne({
@@ -21,7 +21,7 @@ const checkExistAccount = () => {
       if (!account) {
         return res
           .status(404)
-          .send({ isSuccess: false, mes: "Tài khoản không tồn tại" });
+          .send({ isSuccess: false, msg: "Tài khoản không tồn tại" });
       } else {
         if (account.verified === false) {
           return res
@@ -33,7 +33,7 @@ const checkExistAccount = () => {
     } catch (error) {
       return res.status(500).send({
         isSuccess: false,
-        mes: "Có lỗi trong quá trình kiểm tra trùng tài khoản",
+        msg: "Có lỗi trong quá trình kiểm tra trùng tài khoản",
       });
     }
   };
@@ -49,12 +49,12 @@ const checkNotExistAccount = () => {
       if (login === "") {
         return res
           .status(400)
-          .json({ isSuccess: false, mes: "checkNotExistAcc1" });
+          .json({ isSuccess: false, msg: "checkNotExistAcc1" });
       }
       if (isNaN(login)) {
         return res
           .status(400)
-          .json({ isSuccess: false, mes: "checkNotExistAcc2" });
+          .json({ isSuccess: false, msg: "checkNotExistAcc2" });
       }
 
       const account = await Account.findOne({
@@ -66,14 +66,14 @@ const checkNotExistAccount = () => {
       if (account) {
         return res
           .status(409)
-          .send({ isSuccess: false, mes: "Tài khoản đã tồn tại" });
+          .send({ isSuccess: false, msg: "Tài khoản đã tồn tại" });
       } else {
         next();
       }
     } catch (error) {
       return res.status(500).send({
         isSuccess: false,
-        mes: "Có lỗi trong quá trình tạo tài khoản",
+        msg: "Có lỗi trong quá trình tạo tài khoản",
       });
     }
   };

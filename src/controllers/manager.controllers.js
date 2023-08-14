@@ -2,7 +2,8 @@ const { Reservation, Dish, Service } = require("../models");
 
 const createDish = async (req, res) => {
   try {
-    const { name, description, price, image, dishTypeId, isDrink, unit } = req.body;
+    const { name, description, price, image, dishTypeId, isDrink, unit } =
+      req.body;
     const newDish = await Dish.create({
       name: name,
       description: description,
@@ -27,8 +28,16 @@ const createDish = async (req, res) => {
 const updateDish = async (req, res) => {
   try {
     const { dishId } = req.params;
-    const { name, description, price, image, dishTypeId, isDel, isDrink, unit } =
-      req.body;
+    const {
+      name,
+      description,
+      price,
+      image,
+      dishTypeId,
+      isDel,
+      isDrink,
+      unit,
+    } = req.body;
     const dish = await Dish.findOne({
       where: {
         dishId: dishId,
@@ -44,7 +53,7 @@ const updateDish = async (req, res) => {
     dish.isDrink = isDrink;
     dish.unit = unit;
     await dish.save();
-    
+
     res.status(200).json({
       isSuccess: true,
       msg: "Cập nhật món thành công",
@@ -133,9 +142,8 @@ const getAllReservationFilterByManager = async (req, res) => {
 
     let maxPage = Math.ceil(result.count / limit);
     res.status(200).json({
-      result,
       isSuccess: true,
-      maxPage,
+      data: { result, maxPage },
     });
   } catch (error) {
     res.status(500).json({ isSuccess: false, msg: "Lỗi khi lấy ds đặt bàn" });
@@ -153,7 +161,8 @@ const updateStatusOfReservation = async (req, res) => {
     });
 
     reservation.status = status;
-    if (status === "-1") { //nếu từ chối thì thêm lí do
+    if (status === "-1") {
+      //nếu từ chối thì thêm lí do
       reservation.managerNote = managerNote;
     }
     await reservation.save();

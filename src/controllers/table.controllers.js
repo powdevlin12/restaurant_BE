@@ -70,10 +70,10 @@ const getAllTableByDate = async (req, res) => {
     });
     let tableIdOftableReservations = [];
     for (let tableReservation of tableReservations) {
-      console.log(
-        tableReservations.indexOf(tableReservation),
-        tableReservation.dataValues
-      );
+      // console.log(
+      //   tableReservations.indexOf(tableReservation),
+      //   tableReservation.dataValues
+      // );
       if (
         !tableIdOftableReservations.includes(
           tableReservation.dataValues.tableId
@@ -98,7 +98,9 @@ const getAllTableByDate = async (req, res) => {
     });
     res.status(500).json({
       isSuccess: true,
-      tables,
+      data: {
+        tables,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -201,14 +203,18 @@ const checkAvailableTable = async (req, res) => {
     if (tables.length >= countTable) {
       res.status(200).json({
         isSuccess: true,
-        isAvailable: true,
+        data: {
+          isAvailable: true,
+        },
         msg:
           "Chỗ trống có sẵn vào " + schedule + " với " + countGuest + " khách",
       });
     } else {
       res.status(200).json({
         isSuccess: true,
-        isAvailable: false,
+        data: {
+          isAvailable: false,
+        },
         msg:
           "Lượng bàn không có sẵn vào " +
           schedule +

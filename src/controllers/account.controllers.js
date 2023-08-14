@@ -156,11 +156,13 @@ const login = async (req, res) => {
     } else {
       res.status(400).json({
         isSuccess: false,
+        msg: "Mật khẩu hoặc login sai!",
       });
     }
   } catch (error) {
     res.status(400).json({
       isSuccess: false,
+      msg: "Lỗi server!",
     });
   }
 };

@@ -31,7 +31,7 @@ const authorize = (role) => async (req, res, next) => {
       }
     }
   } catch (error) {
-    return res.status(500).json({ error, msg: "failed authorize" });
+    return res.status(500).json({ isSuccess: false, msg: "failed authorize" });
   }
 };
 

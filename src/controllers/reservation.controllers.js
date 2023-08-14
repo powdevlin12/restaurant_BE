@@ -286,7 +286,9 @@ const createReservation = async (req, res) => {
     res.status(200).json({
       isSuccess: true,
       msg: "Đặt bàn thành công",
-      preFee,
+      data: {
+        preFee,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -391,12 +393,15 @@ const getAllReservationFilterByUser = async (req, res) => {
     let maxPage = Math.ceil(result.count / limit);
     let total = result.count;
     delete result.count;
+    let reservations = result.rows;
     res.status(200).json({
       isSuccess: true,
-      maxPage,
-      total: total,
-      currentPage: page,
-      result,
+      data: {
+        maxPage,
+        total: total,
+        currentPage: page,
+        reservations,
+      },
     });
   } catch (error) {
     res.status(500).json({ isSuccess: false, msg: "Thất bại!" });
@@ -454,7 +459,7 @@ const getDetailReservation = async (req, res) => {
     });
     res.status(200).json({
       isSuccess: true,
-      reservation: reservation,
+      data: { reservation: reservation },
     });
   } catch (error) {
     res

@@ -41,11 +41,13 @@ const getAllDishFilter = async (req, res) => {
     });
 
     res.status(200).json({
-      total: result.count,
       isSuccess: true,
-      currentPage: page,
-      maxPage,
-      rows: result.rows,
+      data: {
+        total: result.count,
+        currentPage: page,
+        maxPage,
+        rows: result.rows,
+      },
     });
   } catch (error) {
     res.status(500).json({ isSuccess: false });
@@ -62,7 +64,9 @@ const getAllDishType = async (req, res) => {
     });
     res.status(200).json({
       isSuccess: true,
-      dishTypes,
+      data: {
+        dishTypes,
+      },
     });
   } catch (error) {
     res.status(500).json({ isSuccess: false });

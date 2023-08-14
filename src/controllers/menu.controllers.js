@@ -102,8 +102,11 @@ const getMenuByDate = async (req, res) => {
       };
     });
     res.status(200).json({
-      date,
-      menu,
+      isSuccess: true,
+      data: {
+        date,
+        menu,
+      },
     });
   } catch (error) {
     res.status(500).json({

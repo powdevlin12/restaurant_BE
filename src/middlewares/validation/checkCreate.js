@@ -12,13 +12,13 @@ const checkCreateAccount = (Model) => {
       if (!account) {
         next();
       } else {
-        res
-          .status(409)
-          .json({
+        res.status(409).json({
+          data: {
             isExist: true,
-            isSuccess: false,
-            msg: "Số điện thoại hoặc email đã được sử dụng",
-          });
+          },
+          isSuccess: false,
+          msg: "Số điện thoại hoặc email đã được sử dụng",
+        });
       }
     } catch (error) {
       res
@@ -40,7 +40,9 @@ const checkCreateDish = (Model) => {
       if (!dish) {
         next();
       } else {
-        res.status(400).json({ isExist: true, msg: "Món đã tồn tại!" });
+        res
+          .status(400)
+          .json({ data: { isExist: true }, msg: "Món đã tồn tại!" });
       }
     };
   } catch (error) {
@@ -60,7 +62,12 @@ const checkCreateService = (Model) => {
       if (!service) {
         next();
       } else {
-        res.status(400).json({ isExist: true, msg: "Dịch vụ đã tồn tại!" });
+        res.status(400).json({
+          data: {
+            isExist: true,
+          },
+          msg: "Dịch vụ đã tồn tại!",
+        });
       }
     };
   } catch (error) {
@@ -80,7 +87,12 @@ const checkcreateMenuByManager = (Model) => {
       if (!menu) {
         next();
       } else {
-        res.status(400).json({ isExist: true, msg: "Menu đã tồn tại!" });
+        res.status(400).json({
+          data: {
+            isExist: true,
+          },
+          msg: "Menu đã tồn tại!",
+        });
       }
     };
   } catch (error) {
