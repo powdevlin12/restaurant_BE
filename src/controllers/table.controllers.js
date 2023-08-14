@@ -1,8 +1,5 @@
-const { where } = require("sequelize");
 const { Table, Reservation, Table_Reservation } = require("../models");
-const db = require("../models/index");
 const { Op } = require("sequelize");
-const moment = require("moment");
 
 const getAllTableByDate = async (req, res) => {
   try {

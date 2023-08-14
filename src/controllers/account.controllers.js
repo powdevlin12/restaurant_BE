@@ -59,7 +59,6 @@ const createClientWithTransaction = async (
       text: "VERIFY OTP", // plain text body
       html: `Mã xác nhận của bạn là: ${randomID}`, // html body
     });
-    console.log(3);
     newAccount.otp = randomID;
     await newAccount.save({ transaction: t });
     await t.commit(); // Lưu thay đổi và kết thúc transaction
