@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 
 const getAllTableByDate = async (req, res) => {
   try {
-    let { datetime, tableTypeId } = req.body;
+    let { datetime, tableTypeId } = req.query;
     let reservations;
     let tables, tableReservations;
     datetime = new Date(datetime);
@@ -93,7 +93,7 @@ const getAllTableByDate = async (req, res) => {
       }
       delete element.dataValues.isDel;
     });
-    res.status(500).json({
+    res.status(200).json({
       isSuccess: true,
       data: {
         tables,

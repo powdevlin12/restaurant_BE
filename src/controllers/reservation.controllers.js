@@ -49,12 +49,13 @@ const makeServiceOfReservation = async (
   };
 };
 
-const makeMenuOfReservation = async (reservationId, dishes, transaction) => {
+const makeMenuOfReservation = async (reservationId, dishes, quantities, transaction) => {
   let isSuccess2 = true;
   let msgMakeMenu = "";
   let preFeeMenu = 0;
   try {
     dishes = dishes.split(",").map(Number);
+    quantities = quantities.split(",").map(Number);
 
     for (let dishId of dishes) {
       let dish = await Dish.findOne({
@@ -68,6 +69,7 @@ const makeMenuOfReservation = async (reservationId, dishes, transaction) => {
           dishId: dish.dishId,
           order: dishes.indexOf(dishId) + 1,
           price: dish.price,
+          quantity: quantities[dishes.indexOf(dishId)],
         },
         { transaction: transaction }
       );
@@ -203,7 +205,7 @@ const createReservation = async (req, res) => {
   let msgReservation = "";
   let preFee = 0;
   try {
-    const { dishes, services, note, schedule, tableTypeId, countGuest } =
+    const { dishes, quantities, services, note, schedule, tableTypeId, countGuest } =
       req.body;
     let now = new Date(Date.now());
     const account = req.account;
@@ -245,6 +247,7 @@ const createReservation = async (req, res) => {
       let { isSuccess2, msgMakeMenu, preFeeMenu } = await makeMenuOfReservation(
         reservation.dataValues.reservationId,
         dishes,
+        quantities,
         transaction
       );
       if (!isSuccess2) {
