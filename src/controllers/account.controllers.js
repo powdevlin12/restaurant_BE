@@ -279,13 +279,11 @@ const forgotPassword = async (req, res) => {
 const verify = async (req, res, next) => {
   try {
     const { verifyOTP, login } = req.body;
-    console.log("verifyOTP", verifyOTP);
     var account = await Account.findOne({
       where: {
         otp: verifyOTP,
         [Op.or]: [{ phone: login }, { email: login }],
       },
-      raw: true,
     });
     console.log(account);
     if (account) {

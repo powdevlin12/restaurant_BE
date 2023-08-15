@@ -22,7 +22,7 @@ accountRouter.post(
   checkCreateAccount(Account),
   createAccountForClient
 );
-accountRouter.post("/create/verify", checkExistAccount(), verify);
+accountRouter.post("/create/verify", verify);
 accountRouter.post("/forgotpassword", checkExistAccount(), forgotPassword);
 // accountRouter.post(
 //   "/forgotpassword/verify",

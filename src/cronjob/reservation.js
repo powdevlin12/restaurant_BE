@@ -26,8 +26,8 @@ async function remindUnpaitReservationByEmail() {
       raw: true,
     });
     for (let reservation of reservations) {
-      console.log(reservation);
       let email = reservation["User.Account.email"];
+      let name = reservation["User.userName"];
       let schedule = new Date(reservation.schedule);
       let year = schedule.getFullYear();
       let month = String(schedule.getMonth() + 1).padStart(2, "0");
@@ -85,17 +85,28 @@ async function remindUnpaitReservationByEmail() {
           pass: "fxysqktsjuembqvu", // generated ethereal password
         },
       });
+      let prefixMail = "Kính gửi quý khách " + name + ",";
       // send mail with defined transport object
       await transporter.sendMail({
         from: '"Firestaurant 👻"<n19dccn038@student.ptithcm.edu.vn>', // sender address
-        // from: "n19dccn107@student.ptithcm.edu.vn", // sender address
         to: `${email}`, // list of receivers
         subject: "UNPAID PRE-FEE RESERVATION", // Subject line
         text: "UNPAID PRE-FEE RESERVATION", // plain text body
-        html: `<div>Bạn <span style="color:red;font-size: 14px">CHƯA</span> thanh toán phí trả trước yêu cầu đặt bàn, chi tiết:</div>
-        <div>Thời gian đặt: ${createAt}</div>
-        <div>Thời gian diễn ra: ${schedule}</div>
-        <div>Vui lòng thành toán mức phí trả trước là <span style="color:blue;">${reservation.preFee.toLocaleString()}</span> đồng trước ${deadline}. Nếu không, nhà hàng sẽ <span style="color:red;font-size: 14px">HỦY</span> đơn đặt bàn này! </div>`, // html body
+        html: `<div>${prefixMail}</div>
+        <div>Quý khách <span style="color:red;font-size: 14px">CHƯA</span> thanh toán phí trả trước yêu cầu đặt bàn, chi tiết:</div>
+        <div>Thời gian đặt: ${createAt}.</div>
+        <div>Thời gian diễn ra: ${schedule}.</div>
+        <div>Vui lòng thành toán mức phí trả trước là <span style="color:blue;">${reservation.preFee.toLocaleString()}</span> đồng trước ${deadline}. Nếu không, nhà hàng sẽ <span style="color:red;font-size: 14px">HỦY</span> đơn đặt bàn này</div>
+        <div>Cảm ơn quý khách!</div>
+        <div>Nhà hàng Firestaurant.</div>
+        <br>
+        <div style="opacity:0.7;">
+          <div>Thông tin liên hệ:</div>
+          <div>Lê Mậu Anh Đức</div>
+          <div>Số điện thoại: 0941***027</div>
+          <div>Nhà hàng Firestaurant, 97 Man Thiện, P.Hiệp Phú, TP. Thủ Đức, TP.HCM.</div>
+        </div>
+        `, // html body
       });
     }
     console.log("Unpaid reservation remind successfully.");
