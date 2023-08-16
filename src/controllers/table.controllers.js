@@ -213,7 +213,7 @@ const checkAvailableTable = async (req, res) => {
           isAvailable: false,
         },
         msg:
-          "Lượng bàn không có sẵn vào " +
+          "Chỗ trống không có sẵn vào " +
           schedule +
           " với " +
           countGuest +
