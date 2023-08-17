@@ -15,6 +15,7 @@ const { Op } = require("sequelize");
 const makeServiceOfReservation = async (
   reservationId,
   services,
+  serviceQuantities,
   transaction
 ) => {
   let isSuccess3 = true;
@@ -22,6 +23,7 @@ const makeServiceOfReservation = async (
   let preFeeService = 0;
   try {
     services = services.split(",").map(Number);
+    serviceQuantities = serviceQuantities.split(",").map(Number);
     for (let serviceId of services) {
       let service = await Service.findOne({
         where: {
@@ -33,6 +35,7 @@ const makeServiceOfReservation = async (
           reservationId: reservationId,
           serviceId: service.serviceId,
           price: service.price,
+          quantity: serviceQuantities[services.indexOf(serviceId)],
         },
         { transaction: transaction }
       );
@@ -49,13 +52,15 @@ const makeServiceOfReservation = async (
   };
 };
 
-const makeMenuOfReservation = async (reservationId, dishes, quantities, transaction) => {
+const makeMenuOfReservation = async (reservationId, dishes, dishQuantities, drinks, drinkQuantities, transaction) => {
   let isSuccess2 = true;
   let msgMakeMenu = "";
   let preFeeMenu = 0;
   try {
     dishes = dishes.split(",").map(Number);
-    quantities = quantities.split(",").map(Number);
+    dishQuantities = dishQuantities.split(",").map(Number);
+    drinks = drinks.split(",").map(Number);
+    drinkQuantities = drinkQuantities.split(",").map(Number);
 
     for (let dishId of dishes) {
       let dish = await Dish.findOne({
@@ -69,7 +74,25 @@ const makeMenuOfReservation = async (reservationId, dishes, quantities, transact
           dishId: dish.dishId,
           order: dishes.indexOf(dishId) + 1,
           price: dish.price,
-          quantity: quantities[dishes.indexOf(dishId)],
+          quantity: dishQuantities[dishes.indexOf(dishId)],
+        },
+        { transaction: transaction }
+      );
+      preFeeMenu += menuReservation.price;
+    }
+    for (let drinkId of drinks) {
+      let drink = await Dish.findOne({
+        where: {
+          dishId: drinkId,
+        }
+      });
+      const menuReservation = await Menu_Reservation.create(
+        {
+          reservationId: reservationId,
+          dishId: drink.dishId,
+          order: 0, //drink has order = 0
+          price: drink.price,
+          quantity: drinkQuantities[drinks.indexOf(drinkId)],
         },
         { transaction: transaction }
       );
@@ -205,7 +228,7 @@ const createReservation = async (req, res) => {
   let msgReservation = "";
   let preFee = 0;
   try {
-    const { dishes, quantities, services, note, schedule, tableTypeId, countGuest } =
+    const { dishes, dishQuantities, drinks, drinkQuantities, services, serviceQuantities, note, schedule, tableTypeId, countGuest } =
       req.body;
     let now = new Date(Date.now());
     const account = req.account;
@@ -247,7 +270,9 @@ const createReservation = async (req, res) => {
       let { isSuccess2, msgMakeMenu, preFeeMenu } = await makeMenuOfReservation(
         reservation.dataValues.reservationId,
         dishes,
-        quantities,
+        dishQuantities,
+        drinks,
+        drinkQuantities,
         transaction
       );
       if (!isSuccess2) {
@@ -261,6 +286,7 @@ const createReservation = async (req, res) => {
           await makeServiceOfReservation(
             reservation.dataValues.reservationId,
             services,
+            serviceQuantities,
             transaction
           );
         if (!isSuccess3) {

@@ -1,4 +1,9 @@
-const { Table, Reservation, Table_Reservation } = require("../models");
+const {
+  Table,
+  Reservation,
+  Table_Reservation,
+  TableType,
+} = require("../models");
 const { Op } = require("sequelize");
 
 const getAllTableByDate = async (req, res) => {
@@ -228,7 +233,23 @@ const checkAvailableTable = async (req, res) => {
   }
 };
 
+const getAllTableType = async (req, res) => {
+  try {
+    const tableTypes = await TableType.findAll();
+    res.status(200).json({
+      isSuccess: true,
+      data: tableTypes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      isSuccess: false,
+      msg: "Lỗi lấy danh sách loại bàn",
+    });
+  }
+};
+
 module.exports = {
   getAllTableByDate,
   checkAvailableTable,
+  getAllTableType,
 };
