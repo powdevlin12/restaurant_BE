@@ -52,15 +52,20 @@ const makeServiceOfReservation = async (
   };
 };
 
-const makeMenuOfReservation = async (reservationId, dishes, dishQuantities, drinks, drinkQuantities, transaction) => {
+const makeMenuOfReservation = async (
+  reservationId,
+  dishes,
+  dishQuantities,
+  drinks,
+  drinkQuantities,
+  transaction
+) => {
   let isSuccess2 = true;
   let msgMakeMenu = "";
   let preFeeMenu = 0;
   try {
     dishes = dishes.split(",").map(Number);
     dishQuantities = dishQuantities.split(",").map(Number);
-    drinks = drinks.split(",").map(Number);
-    drinkQuantities = drinkQuantities.split(",").map(Number);
 
     for (let dishId of dishes) {
       let dish = await Dish.findOne({
@@ -80,23 +85,27 @@ const makeMenuOfReservation = async (reservationId, dishes, dishQuantities, drin
       );
       preFeeMenu += menuReservation.price;
     }
-    for (let drinkId of drinks) {
-      let drink = await Dish.findOne({
-        where: {
-          dishId: drinkId,
-        }
-      });
-      const menuReservation = await Menu_Reservation.create(
-        {
-          reservationId: reservationId,
-          dishId: drink.dishId,
-          order: 0, //drink has order = 0
-          price: drink.price,
-          quantity: drinkQuantities[drinks.indexOf(drinkId)],
-        },
-        { transaction: transaction }
-      );
-      preFeeMenu += menuReservation.price;
+    if (drinks) {
+      drinks = drinks.split(",").map(Number);
+      drinkQuantities = drinkQuantities.split(",").map(Number);
+      for (let drinkId of drinks) {
+        let drink = await Dish.findOne({
+          where: {
+            dishId: drinkId,
+          },
+        });
+        const menuReservation = await Menu_Reservation.create(
+          {
+            reservationId: reservationId,
+            dishId: drink.dishId,
+            order: 0, //drink has order = 0
+            price: drink.price,
+            quantity: drinkQuantities[drinks.indexOf(drinkId)],
+          },
+          { transaction: transaction }
+        );
+        preFeeMenu += menuReservation.price;
+      }
     }
   } catch (error) {
     isSuccess2 = false;
@@ -228,8 +237,18 @@ const createReservation = async (req, res) => {
   let msgReservation = "";
   let preFee = 0;
   try {
-    const { dishes, dishQuantities, drinks, drinkQuantities, services, serviceQuantities, note, schedule, tableTypeId, countGuest } =
-      req.body;
+    const {
+      dishes,
+      dishQuantities,
+      drinks,
+      drinkQuantities,
+      services,
+      serviceQuantities,
+      note,
+      schedule,
+      tableTypeId,
+      countGuest,
+    } = req.body;
     let now = new Date(Date.now());
     const account = req.account;
     const user = await User.findOne({
@@ -301,6 +320,7 @@ const createReservation = async (req, res) => {
         preFee = Math.ceil(preFee * 0.3);
       } else {
         preFee = 0;
+        reservation.status = 0;
       }
       reservation.preFee = preFee;
       await reservation.save({ transaction: transaction });
@@ -317,6 +337,7 @@ const createReservation = async (req, res) => {
       msg: "Đặt bàn thành công",
       data: {
         preFee,
+        deadline: new Date(now.getTime() + 7 * 60 * 60 * 1000 + 30 * 60 * 1000),
       },
     });
   } catch (error) {
