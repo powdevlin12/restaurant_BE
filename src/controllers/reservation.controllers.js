@@ -437,20 +437,27 @@ const getAllReservationFilterByUser = async (req, res) => {
 
     for (let element of result.rows) {
       element.dataValues.user = element.dataValues.User;
+      let schedule = new Date(element.dataValues.schedule);
+      element.dataValues.schedule = new Date(
+        schedule.getTime() + 7 * 60 * 60 * 1000
+      );
+      let createAt = new Date(element.dataValues.createAt);
+      element.dataValues.createAt = new Date(
+        createAt.getTime() + 7 * 60 * 60 * 1000
+      );
       delete element.dataValues.User;
     }
 
     let maxPage = Math.ceil(result.count / limit);
     let total = result.count;
     delete result.count;
-    let reservations = result.rows;
     res.status(200).json({
       isSuccess: true,
       data: {
         maxPage,
         total: total,
         currentPage: page,
-        reservations,
+        rows: result.rows,
       },
     });
   } catch (error) {
@@ -461,11 +468,30 @@ const getAllReservationFilterByUser = async (req, res) => {
 const getDetailReservation = async (req, res) => {
   try {
     let { reservationId } = req.params;
+    const account = req.account;
+    const user = await User.findOne({
+      where: {
+        accountId: account.accountId,
+      },
+      attributes: ["userId"],
+    });
     let reservation = await Reservation.findOne({
       where: {
         reservationId: reservationId,
       },
+      include: [{ model: User, attributes: ["userId", "userName"] }],
     });
+    if (account.roleId == 3) {
+      if (user.userId !== reservation.reservationId) {
+        return res.status(403).json({
+          isSuccess: false,
+          mg: "Bạn không có quyền xem chi tiết này!",
+        });
+      }
+    }
+    delete reservation.dataValues.userId;
+    reservation.dataValues.user = reservation.dataValues.User;
+    delete reservation.dataValues.User;
     reservation.dataValues.preFeeStr =
       reservation.dataValues.preFee.toLocaleString();
     let menuReservation = await Menu_Reservation.findAll({
@@ -507,9 +533,28 @@ const getDetailReservation = async (req, res) => {
       element.dataValues.name = element.dataValues.Table.name;
       delete element.dataValues.Table;
     });
+
+    let serviceReservation = await Service_Reservation.findAll({
+      where: {
+        reservationId: reservation.reservationId,
+      },
+      attributes: ["serviceId", "price", "quantity"],
+      include: [
+        {
+          model: Service,
+          attributes: ["unit"],
+        },
+      ],
+    });
+    reservation.dataValues.services = serviceReservation;
+    reservation.dataValues.services.forEach((element) => {
+      element.dataValues.unit = element.dataValues.Service.unit;
+      delete element.dataValues.Service;
+    });
+
     res.status(200).json({
       isSuccess: true,
-      data: { reservation: reservation },
+      data: { reservation },
     });
   } catch (error) {
     res
