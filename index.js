@@ -9,9 +9,11 @@ const PORT = 3005;
 const app = express();
 const cron = require("cron");
 const cors = require("cors");
+var vnpay = require("./src/routers/vnpay");
 
 app.use(cookieParser());
 app.use(cors());
+const expHBS = require("express-handlebars");
 
 //đọc được json
 app.use(express.json());
@@ -22,6 +24,38 @@ app.use(express.urlencoded({ extended: true }));
 
 //call route
 app.use(rootRouter);
+
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true,
+    secret: "SECRET",
+  })
+);
+
+/* SETUP PAYMENT */
+var hbs = expHBS.create({
+  extname: "hbs",
+  helpers: {
+    ifcond: function (v1, v2, options) {
+      if (v1 === v2) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    },
+  },
+});
+
+app.engine("hbs", hbs.engine);
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "src/views"));
+console.log(__dirname);
+app.use("/vnpay", vnpay);
+
+/*  PASSPORT SETUP  */
+const passport = require("passport");
+app.use(passport.initialize());
+app.use(passport.session());
 
 const {
   remindUnpaitReservationByEmail,
