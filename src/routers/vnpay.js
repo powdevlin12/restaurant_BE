@@ -46,7 +46,6 @@ router.post("/create_payment_url", async function (req, res, next) {
           req.connection.socket.remoteAddress;
 
         let config = require("../config/default.json");
-        console.log("config", config.vnp_TmnCode);
 
         let tmnCode = config.vnp_TmnCode;
         let secretKey = config.vnp_HashSecret;

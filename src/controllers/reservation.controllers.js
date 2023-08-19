@@ -39,7 +39,7 @@ const makeServiceOfReservation = async (
         },
         { transaction: transaction }
       );
-      preFeeService += serviceReservation.price;
+      preFeeService += serviceReservation.price * serviceReservation.quantity;
     }
   } catch (error) {
     isSuccess3 = false;
@@ -83,7 +83,7 @@ const makeMenuOfReservation = async (
         },
         { transaction: transaction }
       );
-      preFeeMenu += menuReservation.price;
+      preFeeMenu += menuReservation.price * menuReservation.quantity;
     }
     if (drinks) {
       drinks = drinks.split(",").map(Number);
@@ -104,7 +104,7 @@ const makeMenuOfReservation = async (
           },
           { transaction: transaction }
         );
-        preFeeMenu += menuReservation.price;
+        preFeeMenu += menuReservation.price * menuReservation.quantity;
       }
     }
   } catch (error) {
@@ -236,6 +236,7 @@ const makeTableOfReservation = async (
 const createReservation = async (req, res) => {
   let msgReservation = "";
   let preFee = 0;
+  let result = "";
   try {
     const {
       dishes,
@@ -316,6 +317,7 @@ const createReservation = async (req, res) => {
         }
       }
       // nếu tổng tiền >= 1000000 thì lấy 30%, ko thì ko tính
+      console.log("preFee", preFee);
       if (preFee >= 1000000) {
         preFee = Math.ceil(preFee * 0.3);
       } else {
@@ -323,6 +325,7 @@ const createReservation = async (req, res) => {
         reservation.status = 0;
       }
       reservation.preFee = preFee;
+      result = reservation;
       await reservation.save({ transaction: transaction });
       await transaction.commit();
     } catch (error) {
@@ -336,6 +339,7 @@ const createReservation = async (req, res) => {
       isSuccess: true,
       msg: "Đặt bàn thành công",
       data: {
+        reservationId: result.reservationId,
         preFee,
         deadline: new Date(now.getTime() + 7 * 60 * 60 * 1000 + 30 * 60 * 1000),
       },
@@ -482,7 +486,7 @@ const getDetailReservation = async (req, res) => {
       include: [{ model: User, attributes: ["userId", "userName"] }],
     });
     if (account.roleId == 3) {
-      if (user.userId !== reservation.reservationId) {
+      if (user.userId !== reservation.userId) {
         return res.status(403).json({
           isSuccess: false,
           mg: "Bạn không có quyền xem chi tiết này!",
