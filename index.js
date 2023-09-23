@@ -5,11 +5,12 @@ const { QueryTypes } = require("sequelize");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const path = require("path");
-const PORT = 3005;
+const PORT = process.env.PORT || 3005;
 const app = express();
 const cron = require("cron");
 const cors = require("cors");
 var vnpay = require("./src/routers/vnpay");
+const morgan = require('morgan');
 
 app.use(cookieParser());
 app.use(cors());
@@ -32,7 +33,8 @@ app.use(
     secret: "SECRET",
   })
 );
-
+// logger
+app.use(morgan('combined'));
 /* SETUP PAYMENT */
 var hbs = expHBS.create({
   extname: "hbs",

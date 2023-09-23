@@ -31,6 +31,7 @@ module.exports = {
         allowNull: false,
       },
       gender: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
     });
