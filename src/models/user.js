@@ -14,14 +14,16 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Message, {
-        foreignKey: "receiveUserId",
+        foreignKey: 'messageId', as: 'senderId'
       });
-      this.hasMany(models.Message, {
-        foreignKey: "sendUserId",
-      });
+
       this.hasMany(models.Reservation, {
         foreignKey: "userId",
       })
+
+      this.belongsToMany(models.Conversation, {
+        through: 'UserConversation',
+      });
     }
   }
   User.init(
