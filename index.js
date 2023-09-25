@@ -86,8 +86,16 @@ const remindJob = new cron.CronJob("*/15 * * * * *", async () => {
 const listener = app.listen(PORT, async () => {
   console.log(`App listening on http://localhost:${PORT}`);
   try {
-    await sequelize.authenticate();
-    console.log("Kết nối thành công!");
+    await sequelize.authenticate().then(() => {
+      sequelize.sync({ force: true }).then(() => {
+        console.log('Cơ sở dữ liệu đã được đồng bộ hoá.');
+        // Tiếp tục thực hiện các tác vụ khác trong ứng dụng của bạn
+      }).catch((error) => {
+        console.error('Lỗi đồng bộ hoá cơ sở dữ liệu:', error);
+      });
+      console.log("Kết nối thành công!");
+    });
+
   } catch (error) {
     console.error("Kết nối thất bại:", error);
   }
