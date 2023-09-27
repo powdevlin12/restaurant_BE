@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // association Message vs User
-      this.belongsTo(models.User, { foreignKey: 'messageId' });
+      this.belongsTo(models.User, { foreignKey: 'userId' });
 
       // association Message vs Conversation
-      this.belongsTo(models.Conversation, { foreignKey: 'messageId' });
+      this.belongsTo(models.Conversation, { foreignKey: 'conversationId' });
     }
   }
   Message.init(

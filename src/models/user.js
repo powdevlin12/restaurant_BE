@@ -10,19 +10,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Account, {
-        foreignKey: "accountId",
+        foreignKey: "userId",
       });
 
       this.hasMany(models.Message, {
-        foreignKey: 'messageId', as: 'senderId'
+        foreignKey: 'userId'
       });
 
       this.hasMany(models.Reservation, {
         foreignKey: "userId",
       })
 
-      this.belongsToMany(models.Conversation, {
-        through: 'UserConversation',
+      this.hasMany(models.UserConversation, {
+        foreignKey: "userId",
       });
     }
   }

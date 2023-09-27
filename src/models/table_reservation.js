@@ -19,24 +19,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Table_Reservation.init(
     {
-      reservationId: {
+      tableReservationId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        references: {
-          model: "Reservation",
-          key: "reservationId",
-        },
-      },
-      tableId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        references: {
-          model: "Table",
-          key: "tableId",
-        },
-      },
+      }
     },
     {
       sequelize,

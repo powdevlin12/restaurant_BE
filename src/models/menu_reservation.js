@@ -19,23 +19,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   Menu_Reservation.init(
     {
-      dishId: {
+      menuReservationId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        references: {
-          model: "Dish",
-          key: "dishId",
-        },
-      },
-      reservationId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        references: {
-          model: "Reservation",
-          key: "reservationId",
-        },
       },
       order: {
         type: DataTypes.INTEGER,

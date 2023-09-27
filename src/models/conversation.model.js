@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { Sequelize } = require(".");
 module.exports = (sequelize, DataTypes) => {
   class Conversation extends Model {
     /**
@@ -9,19 +10,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasMany(models.Message, {
-        foreignKey: 'messageId'
+        foreignKey: 'conversationId'
       });
 
-      this.belongsToMany(models.User, {
-        through: 'UserConversation',
-      });
+      this.hasMany(models.UserConversation, {
+        foreignKey: 'conversationId'
+      })
 
-      this.hasOne(models.Message, { foreignKey: 'lastMessageId' });
     }
   }
   Conversation.init(
     {
-
+      conversationId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
+      },
     },
     {
       sequelize,

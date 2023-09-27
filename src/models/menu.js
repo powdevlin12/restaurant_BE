@@ -21,15 +21,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
       },
-      dishId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        references: {
-          model: "Dish",
-          key: "dishId",
-        },
-      },
       price: {
         type: DataTypes.INTEGER,
         allowNull: false,
