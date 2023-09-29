@@ -111,6 +111,6 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("socket io connected successfully.");
+  console.log("socket io connected successfully", socket.id);
   SocketServer(socket, io);
 });
