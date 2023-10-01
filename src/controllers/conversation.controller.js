@@ -1,4 +1,4 @@
-const { createConversationService } = require("../services/conversation.service");
+const { createConversationService, acceptConversationServer } = require("../services/conversation.service");
 const { createMessageService } = require("../services/message.service");
 const { createUserConversationService, getConversationOfManager, getConversationOfClient } = require("../services/userConversation.service");
 
@@ -55,7 +55,27 @@ const getConversation = async (req, res, next) => {
   }
 }
 
+const acceptConversation = async (req, res, next) => {
+  const { id } = req.params;
+  const user = req.user;
+
+  const result = await acceptConversationServer(id, user.userId);
+
+  if (result.isSuccess) {
+    return res.status(201).json({
+      isSuccess: true,
+      message: result.message
+    })
+  } else {
+    return res.status(500).json({
+      isSuccess: false,
+      message: 'Manager chấp nhận tin nhắn từ khách hàng thất bại !'
+    })
+  }
+}
+
 module.exports = {
   createConversation,
-  getConversation
+  getConversation,
+  acceptConversation
 }
