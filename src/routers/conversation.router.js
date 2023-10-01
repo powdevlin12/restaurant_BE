@@ -6,7 +6,7 @@ const conversationRouter = express.Router();
 
 conversationRouter
   .post('/', authenticate, createConversation)
-  .get('/', authenticate, authorize(["manager"]), getConversation)
+  .get('/', authenticate, getConversation)
 
 module.exports = {
   conversationRouter,

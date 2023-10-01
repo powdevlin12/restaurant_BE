@@ -24,7 +24,6 @@ const createUserConversationService = async (conversationId, userId) => {
 }
 
 const getConversationOfManager = async (userId) => {
-  console.log("🚀 ~ file: userConversation.service.js:26 ~ getConversationOfManager ~ userId:", userId)
   try {
     const conversations = await UserConversation.findAll({
       where: {
@@ -51,7 +50,28 @@ const getConversationOfManager = async (userId) => {
   }
 }
 
+const getConversationOfClient = async (userId) => {
+  try {
+    const conversations = await UserConversation.findAll({
+      where: {
+        userId
+      },
+      include: [
+        Conversation,
+      ]
+    })
+    return conversations
+  } catch (error) {
+    console.log("🚀 ~ file: userConversation.service.js:58 ~ getConversationOfClient ~ error:", error)
+    return {
+      isSuccess: false,
+      message: error.message
+    }
+  }
+}
+
 module.exports = {
   createUserConversationService,
-  getConversationOfManager
+  getConversationOfManager,
+  getConversationOfClient
 }
