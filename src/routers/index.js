@@ -7,6 +7,7 @@ const { menuRouter } = require("./menu.routers");
 const { reservationRouter } = require("./reservation.routers");
 const { tableRouter } = require("./table.routers");
 const { managerRouter } = require("./manager.routers");
+const { conversationRouter } = require("./conversation.router");
 const rootRouter = express.Router();
 
 rootRouter.use("/account", accountRouter);
@@ -17,7 +18,7 @@ rootRouter.use("/user", userRouter);
 rootRouter.use("/reservation", reservationRouter);
 rootRouter.use("/table", tableRouter);
 rootRouter.use("/manager", managerRouter);
-
+rootRouter.use('/conversation', conversationRouter)
 module.exports = {
   rootRouter,
 };
