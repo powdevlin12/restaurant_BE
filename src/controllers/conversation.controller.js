@@ -1,6 +1,6 @@
 const { createConversationService } = require("../services/conversation.service");
 const { createMessageService } = require("../services/message.service");
-const { createUserConversationService } = require("../services/userConversation.service");
+const { createUserConversationService, getConversationOfManager } = require("../services/userConversation.service");
 
 const createConversation = async (req, res, next) => {
   const user = req.user;
@@ -30,7 +30,22 @@ const createConversation = async (req, res, next) => {
 }
 
 const getConversation = async (req, res, next) => {
+  const user = req.user;
+  const { role } = req.query;
 
+  try {
+    const conversationsOfManager = await getConversationOfManager(user.userId)
+    return res.status(201).json({
+      isSuccess: true,
+      conversationsOfManager
+    })
+  } catch (error) {
+    console.log("🚀 ~ file: conversation.controller.js:39 ~ getConversation ~ error:", error)
+    return res.status(500).json({
+      isSuccess: false,
+      message: error.message
+    })
+  }
 }
 
 module.exports = {
