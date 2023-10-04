@@ -23,7 +23,7 @@ const acceptConversationServer = async (conversationId, managerId) => {
   try {
     const resultUpdate = await Conversation.update(
       { accept_manager: true },
-      { where: { conversationId } }
+      { where: { conversationId, accept_manager: false } }
     )
 
     if (resultUpdate > 0) {
