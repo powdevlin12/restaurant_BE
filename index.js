@@ -16,6 +16,7 @@ const { SocketServer } = require("./src/SocketServer");
 
 app.use(cookieParser());
 app.use(cors());
+
 const expHBS = require("express-handlebars");
 
 //đọc được json
@@ -36,7 +37,7 @@ app.use(
   })
 );
 // logger
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 /* SETUP PAYMENT */
 var hbs = expHBS.create({
   extname: "hbs",

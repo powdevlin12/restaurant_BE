@@ -1,5 +1,5 @@
 const { createConversationService, acceptConversationServer } = require("../services/conversation.service");
-const { createMessageService } = require("../services/message.service");
+const { createMessageService, getAllMessagesOfConversationService } = require("../services/message.service");
 const { createUserConversationService, getConversationOfManager, getConversationOfClient } = require("../services/userConversation.service");
 
 const createConversation = async (req, res, next) => {
@@ -74,8 +74,23 @@ const acceptConversation = async (req, res, next) => {
   }
 }
 
+const getAllMessagesOfConversation = async (req, res, next) => {
+  const { id } = req.params;
+  const user = req.user;
+
+  const result = await getAllMessagesOfConversationService(id, user.userId);
+  console.log("🚀 ~ file: conversation.controller.js:82 ~ getAllMessagesOfConversation ~ result:", result)
+
+  if (result.isSuccess) {
+    return res.status(result.statusCode).json(result.allMessage)
+  } else {
+    return res.status(result.statusCode).json({ message: result.message })
+  }
+}
+
 module.exports = {
   createConversation,
   getConversation,
-  acceptConversation
+  acceptConversation,
+  getAllMessagesOfConversation
 }
