@@ -11,19 +11,24 @@ const createMessageService = async (userId, content, conversationId) => {
     if (message) {
       return {
         isSuccess: true,
-        message: "Tạo tin nhắn thành công"
+        message: "Tạo tin nhắn thành công",
+        statusCode: 201,
       }
     }
   } catch (error) {
     console.log(error);
+    return {
+      isSuccess: false,
+      message: "Tạo tin nhắn thất bại, lỗi server",
+      statusCode: 500,
+    }
   }
 }
 
-const getAllMessagesOfConversationService = async (conversationId, userId) => {
+const getAllMessagesOfConversationService = async (conversationId) => {
   try {
     const allMessage = await Message.findAll({
       where: {
-        userId,
         conversationId
       },
       include: [
