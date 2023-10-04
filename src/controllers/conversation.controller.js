@@ -31,20 +31,20 @@ const createConversation = async (req, res, next) => {
 
 const getConversation = async (req, res, next) => {
   const user = req.user;
-  const { role } = req.query;
+  const account = req.account;
 
   try {
     let conversationsOfManager = null;
     let conversationsOfClient = null;
 
-    if (role === 'manager') {
+    if (account.roleId === 2) {
       conversationsOfManager = await getConversationOfManager(user.userId)
     } else {
       conversationsOfClient = await getConversationOfClient(user.userId)
     }
     return res.status(201).json({
       isSuccess: true,
-      conversations: role === 'manager' ? conversationsOfManager : conversationsOfClient
+      conversations: account.roleId === 2 ? conversationsOfManager : conversationsOfClient
     })
   } catch (error) {
     console.log("🚀 ~ file: conversation.controller.js:39 ~ getConversation ~ error:", error)

@@ -1,4 +1,4 @@
-const { UserConversation, Conversation } = require("../models");
+const { UserConversation, Conversation, User } = require("../models");
 const { Op } = require('sequelize');
 
 const createUserConversationService = async (conversationId, userId) => {
@@ -38,7 +38,9 @@ const getConversationOfManager = async (userId) => {
         model: Conversation,
         as: 'Conversation',
         required: true
-      }]
+      },
+        User
+      ]
     })
     return conversations
   } catch (error) {
@@ -58,6 +60,7 @@ const getConversationOfClient = async (userId) => {
       },
       include: [
         Conversation,
+        User
       ]
     })
     return conversations
