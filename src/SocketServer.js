@@ -9,9 +9,11 @@ function SocketServer(socket, io) {
   // FINISH JOIN ROOM
 
   // SEND MESSAGES
-  socket.on("send-message", data => {
-    const { message, conversation } = data;
-
+  socket.on("send-message", (data) => {
+    const { message, conversationId, members, senderId } = JSON.parse(data);
+    console.log("🚀 ~ file: SocketServer.js:14 ~ socket.on ~ members:", members)
+    // if (members.some(item => item.userId === senderId)) return;
+    // socket.in(conversationId).emit('reciever-message', message);
   })
   // FINISH SEND MESSAGES
 }

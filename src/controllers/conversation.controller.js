@@ -44,7 +44,9 @@ const getConversation = async (req, res, next) => {
     }
     return res.status(201).json({
       isSuccess: true,
-      conversations: account.roleId === 2 ? conversationsOfManager : conversationsOfClient
+      data: {
+        conversations: account.roleId === 2 ? conversationsOfManager : conversationsOfClient
+      }
     })
   } catch (error) {
     console.log("🚀 ~ file: conversation.controller.js:39 ~ getConversation ~ error:", error)
@@ -91,7 +93,6 @@ const getAllMessagesOfConversation = async (req, res, next) => {
   const user = req.user;
 
   const result = await getAllMessagesOfConversationService(id, user.userId);
-  console.log("🚀 ~ file: conversation.controller.js:82 ~ getAllMessagesOfConversation ~ result:", result)
 
   if (result.isSuccess) {
     return res.status(result.statusCode).json(result.allMessage)
