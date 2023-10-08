@@ -113,5 +113,14 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("socket io connected successfully", socket.id);
+  console.log("client connection : ", io.engine.clientsCount);
   SocketServer(socket, io);
 });
+
+io.use((socket, next) => {
+  socket.on("disconnect", () => {
+    console.log('disconnect successfully', socket.id)
+  })
+
+  return next();
+})
