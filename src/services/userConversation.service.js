@@ -34,15 +34,29 @@ const getConversationOfManager = async (userId) => {
           }
         ]
       },
-      include: [{
-        model: Conversation,
-        as: 'Conversation',
-        required: true
-      },
-        User
+      include: [
+        Conversation
       ]
     })
-    return conversations
+
+    const listConversationsPromise = conversations.map(item => getUserByConversationIdService(item.conversationId))
+
+    const result = Promise.all(listConversationsPromise)
+      .then((values) => {
+        const finalData = []
+        values.forEach(conversation => {
+          conversation.map(({ User }) => finalData.push(User))
+        });
+        return finalData.filter(item => item.userId !== userId);
+      })
+      .catch(err => {
+        console.log("🚀 ~ file: userConversation.service.js:29 ~ getConversationOfManager ~ error:", err)
+        return {
+          isSuccess: false,
+          message: err
+        }
+      });
+    return result;
   } catch (error) {
     console.log("🚀 ~ file: userConversation.service.js:29 ~ getConversationOfManager ~ error:", error)
     return {
@@ -73,8 +87,31 @@ const getConversationOfClient = async (userId) => {
   }
 }
 
+const getUserByConversationIdService = (conversationId) => {
+  return new Promise((resolve, reject) => {
+    const conversations = UserConversation.findAll({
+      where: {
+        conversationId
+      },
+      include: [
+        User
+      ]
+    })
+
+    if (conversations) {
+      resolve(conversations)
+    } else {
+      reject({
+        isSuccess: false,
+        error: 'Couldn\'t find conversation'
+      })
+    }
+  })
+}
+
 module.exports = {
   createUserConversationService,
   getConversationOfManager,
-  getConversationOfClient
+  getConversationOfClient,
+  getUserByConversationIdService
 }
