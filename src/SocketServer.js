@@ -1,23 +1,24 @@
 function SocketServer(socket, io) {
   // JOIN ROOM
-  socket.on('join', converstionId => {
-    socket.join(converstionId)
-    const room = io.sockets.adapter.rooms.get(converstionId);
+  socket.on('join', data => {
+    const conversationId = JSON.parse(data).conversationId
+    socket.join(conversationId);
+    const room = io.sockets.adapter.rooms.get(conversationId);
     const numUsers = room ? room.size : 0;
-    console.log(`Total people in room ${converstionId} : `, numUsers)
+    console.log(`Total people in room ${conversationId}: `, numUsers);
+    socket.emit("join-success", { msg: "OK" });
   });
-  // FINISH JOIN ROOM
 
   // SEND MESSAGES
   socket.on("send-message", (data) => {
-    const { message, conversationId, members, senderId } = JSON.parse(data);
-    console.log("🚀 ~ file: SocketServer.js:14 ~ socket.on ~ members:", members)
-    // if (members.some(item => item.userId === senderId)) return;
-    // socket.in(conversationId).emit('reciever-message', message);
-  })
-  // FINISH SEND MESSAGES
-}
+    const { message, conversationId, senderId } = JSON.parse(data);
+    const room = io.sockets.adapter.rooms.get(conversationId);
+    console.log("🚀 ~ file: SocketServer.js:22 ~ socket.on ~ room:", room)
 
+    socket.broadcast.to(conversationId).emit('receiver-message', { message, senderId });
+  });
+}
+// FINISH SEND MESSAGES
 module.exports = {
   SocketServer
 }
