@@ -1,4 +1,4 @@
-const { Conversation, UserConversation } = require("../models");
+const { Conversation, UserConversation, User } = require("../models");
 
 const createConversationService = async () => {
   try {
@@ -52,7 +52,33 @@ const acceptConversationServer = async (conversationId, managerId) => {
   }
 }
 
+const getMembersInConversationService = async (conversationId) => {
+  try {
+    const result = await UserConversation.findAll({
+      where: {
+        conversationId
+      },
+      include: [
+        User
+      ]
+    })
+
+    const members = result.map(({ User }) => User);
+    return {
+      isSuccess: true,
+      data: members,
+    }
+  } catch (error) {
+    console.log("🚀 ~ file: conversation.controller.js:62 ~ getMembersInConversation ~ error:", error)
+    return {
+      isSuccess: false,
+      message: error.message
+    }
+  }
+}
+
 module.exports = {
   createConversationService,
-  acceptConversationServer
+  acceptConversationServer,
+  getMembersInConversationService
 }
