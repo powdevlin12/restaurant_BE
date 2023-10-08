@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Account, Role } = require("../../models");
+const { Account, Role, User } = require("../../models");
 const authenticate = async (req, res, next) => {
   try {
     const token = req.headers.access_token;
@@ -19,7 +19,15 @@ const authenticate = async (req, res, next) => {
         .status(403)
         .json({ msg: "Tài khoản chưa được xác thực!", isSuccess: false });
     }
+
+    const user = await User.findOne({
+      where: {
+        accountId: account.accountId,
+      }
+    })
+
     req.account = account;
+    req.user = user;
 
     return next();
   } catch {

@@ -64,6 +64,7 @@ const createClientWithTransaction = async (
     await t.commit(); // Lưu thay đổi và kết thúc transaction
     isSuccess = true;
   } catch (error) {
+    console.log("🚀 ~ file: account.controllers.js:67 ~ error:", error)
     isSuccess = false;
     await t.rollback();
   }
@@ -155,7 +156,7 @@ const login = async (req, res) => {
     } else {
       res.status(400).json({
         isSuccess: false,
-        msg: "Mật khẩu hoặc login sai!",
+        msg: "Mật khẩu hoặc mật khẩu không đúng!",
       });
     }
   } catch (error) {

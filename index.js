@@ -11,9 +11,12 @@ const cron = require("cron");
 const cors = require("cors");
 var vnpay = require("./src/routers/vnpay");
 const morgan = require('morgan');
+const { Server } = require("socket.io");
+const { SocketServer } = require("./src/SocketServer");
 
 app.use(cookieParser());
 app.use(cors());
+
 const expHBS = require("express-handlebars");
 
 //đọc được json
@@ -34,7 +37,7 @@ app.use(
   })
 );
 // logger
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 /* SETUP PAYMENT */
 var hbs = expHBS.create({
   extname: "hbs",
@@ -83,7 +86,7 @@ const remindJob = new cron.CronJob("*/15 * * * * *", async () => {
 // job.start();
 // remindJob.start();
 
-const listener = app.listen(PORT, async () => {
+const server = app.listen(PORT, async () => {
   console.log(`App listening on http://localhost:${PORT}`);
   try {
     await sequelize.authenticate().then(() => {
@@ -99,4 +102,16 @@ const listener = app.listen(PORT, async () => {
   } catch (error) {
     console.error("Kết nối thất bại:", error);
   }
+});
+
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.CLIENT_ENDPOINT,
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("socket io connected successfully", socket.id);
+  SocketServer(socket, io);
 });
