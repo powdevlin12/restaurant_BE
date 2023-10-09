@@ -1,6 +1,17 @@
-const { createConversationService, acceptConversationServer, getMembersInConversationService } = require("../services/conversation.service");
-const { createMessageService, getAllMessagesOfConversationService } = require("../services/message.service");
-const { createUserConversationService, getConversationOfManager, getConversationOfClient } = require("../services/userConversation.service");
+const {
+  createConversationService,
+  acceptConversationServer,
+  getMembersInConversationService,
+} = require("../services/conversation.service");
+const {
+  createMessageService,
+  getAllMessagesOfConversationService,
+} = require("../services/message.service");
+const {
+  createUserConversationService,
+  getConversationOfManager,
+  getConversationOfClient,
+} = require("../services/userConversation.service");
 
 const createConversation = async (req, res, next) => {
   const user = req.user;
@@ -73,15 +84,18 @@ const getConversation = async (req, res, next) => {
 
 const getMembersInConversation = async (req, res, next) => {
   const { conversationId } = req.params;
-  console.log("🚀 ~ file: conversation.controller.js:60 ~ getMembersInConversation ~ conversationId:", conversationId)
-  const result = await getMembersInConversationService(conversationId)
+  console.log(
+    "🚀 ~ file: conversation.controller.js:60 ~ getMembersInConversation ~ conversationId:",
+    conversationId
+  );
+  const result = await getMembersInConversationService(conversationId);
 
   if (result) {
-    return res.status(200).json(result)
+    return res.status(200).json(result);
   } else {
-    return res.status(500).json(result)
+    return res.status(500).json(result);
   }
-}
+};
 
 const acceptConversation = async (req, res, next) => {
   const { id } = req.params;
@@ -128,5 +142,5 @@ module.exports = {
   getConversation,
   acceptConversation,
   getAllMessagesOfConversation,
-  getMembersInConversation
-}
+  getMembersInConversation,
+};

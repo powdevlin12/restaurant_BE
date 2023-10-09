@@ -64,7 +64,7 @@ const createClientWithTransaction = async (
     await t.commit(); // Lưu thay đổi và kết thúc transaction
     isSuccess = true;
   } catch (error) {
-    console.log("🚀 ~ file: account.controllers.js:67 ~ error:", error)
+    console.log("🚀 ~ file: account.controllers.js:67 ~ error:", error);
     isSuccess = false;
     await t.rollback();
   }

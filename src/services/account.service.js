@@ -1,31 +1,15 @@
-export const createClientWithTransaction = async () => {
+export const createClientWithTransaction = async () => {};
 
-}
+export const createAccountForClient = () => {};
 
-export const createAccountForClient = () => {
+export const login = () => {};
 
-}
+export const changePassword = () => {};
 
-export const login = () => {
+export const forgotPassword = () => {};
 
-}
+export const logout = () => {};
 
-export const changePassword = () => {
+export const verify = () => {};
 
-}
-
-export const forgotPassword = () => {
-
-}
-
-export const logout = () => {
-
-}
-
-export const verify = () => {
-
-}
-
-export const accessForgotPassword = () => {
-
-}
+export const accessForgotPassword = () => {};
