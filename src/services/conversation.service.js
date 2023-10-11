@@ -1,3 +1,5 @@
+const { ERROR_CREATE, ERROR_NOT_FOUND, ERROR_SERVER } = require("../config/messages/error.message");
+const { SUCCESS_CREATE, SUCCESS_ACCEPT_CONVERSATION } = require("../config/messages/success.message");
 const { Conversation, UserConversation, User, Message } = require("../models");
 
 const createConversationService = async () => {
@@ -6,7 +8,7 @@ const createConversationService = async () => {
     if (conversation) {
       return {
         isSuccess: true,
-        message: 'Tạo cuộc hội thoại thành công !',
+        message: SUCCESS_CREATE,
         conversation
       }
     }
@@ -14,7 +16,7 @@ const createConversationService = async () => {
     console.log("🚀 ~ file: conversation.service.js:14 ~ createConversationService ~ error:", error)
     return {
       isSuccess: false,
-      message: 'Tạo cuộc hội thoại thất bại !'
+      message: ERROR_CREATE
     }
   }
 }
@@ -34,20 +36,20 @@ const acceptConversationServer = async (conversationId, managerId) => {
       if (newUserConversation) {
         return {
           isSuccess: true,
-          message: "Chấp nhận cuộc hội thoại thành công",
+          message: SUCCESS_ACCEPT_CONVERSATION,
         }
       }
     } else {
       return {
         isSuccess: false,
-        message: "Không tìm thấy đoạn hội thoại này !",
+        message: ERROR_NOT_FOUND,
       }
     }
   } catch (error) {
     console.log("🚀 ~ file: conversation.service.js:26 ~ acceptConversationServer ~ error:", error)
     return {
       isSuccess: false,
-      message: error.message,
+      message: ERROR_SERVER,
     }
   }
 }
@@ -72,7 +74,7 @@ const getMembersInConversationService = async (conversationId) => {
     console.log("🚀 ~ file: conversation.controller.js:62 ~ getMembersInConversation ~ error:", error)
     return {
       isSuccess: false,
-      message: error.message
+      message: ERROR_NOT_FOUND
     }
   }
 }
@@ -99,7 +101,7 @@ const getAllMessagesOfClientServer = async (userId) => {
     console.log("🚀 ~ file: conversation.service.js:84 ~ getAllMessagesOfClientServer ~ error:", error)
     return {
       isSuccess: false,
-      message: error.message,
+      message: ERROR_NOT_FOUND,
       statusCode: 500
     }
   }

@@ -1,3 +1,4 @@
+const { ERROR_SERVER } = require("../config/messages/error.message");
 const { UserConversation, Conversation, User } = require("../models");
 const { Op } = require('sequelize');
 
@@ -64,7 +65,7 @@ const getConversationOfManager = async (userId) => {
     console.log("🚀 ~ file: userConversation.service.js:29 ~ getConversationOfManager ~ error:", error)
     return {
       isSuccess: false,
-      message: error.message
+      message: ERROR_SERVER
     }
   }
 }
@@ -85,7 +86,7 @@ const getConversationOfClient = async (userId) => {
     console.log("🚀 ~ file: userConversation.service.js:58 ~ getConversationOfClient ~ error:", error)
     return {
       isSuccess: false,
-      message: error.message
+      message: ERROR_SERVER
     }
   }
 }
