@@ -5,5 +5,5 @@ Made by:
   * Le Mau Anh Duc - N19DCCN038
   * Tran Thu Dat - N19DCCN036
 ## Related Source
+  * [Frontend](https://github.com/DyNamite-TNT-1/hweight_mobile_app)
   * [Document](https://github.com/DyNamite-TNT-1/doc-restaurant-project)
-  * [Back-end](https://github.com/DyNamite-TNT-1/nodejs_be_restaurant)
