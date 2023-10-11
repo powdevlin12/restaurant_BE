@@ -37,8 +37,12 @@ const getConversationOfManager = async (userId) => {
           },
         ],
       },
-      include: [Conversation],
-    });
+      include: [
+        Conversation,
+        User
+      ]
+    })
+
 
     const listConversationsPromise = conversations.map((item) =>
       getUserByConversationIdService(item.conversationId)
@@ -46,11 +50,12 @@ const getConversationOfManager = async (userId) => {
 
     const result = Promise.all(listConversationsPromise)
       .then((values) => {
-        const finalData = [];
-        values.forEach((conversation) => {
-          conversation.map(({ User }) => finalData.push(User));
+        console.log("🚀 ~ file: userConversation.service.js:48 ~ .then ~ values:", values)
+        const finalData = []
+        values.forEach(conversation => {
+          conversation.map((item) => finalData.push({ user: item.User, conversation: item.Conversation }))
         });
-        return finalData.filter((item) => item.userId !== userId);
+        return finalData.filter(item => item.user.userId !== userId);
       })
       .catch((err) => {
         console.log(
@@ -102,8 +107,11 @@ const getUserByConversationIdService = (conversationId) => {
       where: {
         conversationId,
       },
-      include: [User],
-    });
+      include: [
+        User,
+        Conversation
+      ]
+    })
 
     if (conversations) {
       resolve(conversations);
