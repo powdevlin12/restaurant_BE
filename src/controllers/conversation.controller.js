@@ -105,8 +105,9 @@ const acceptConversation = async (req, res, next) => {
 const getAllMessagesOfConversation = async (req, res, next) => {
   const { id } = req.params;
   const user = req.user;
+  const account = req.account;
 
-  const result = await getAllMessagesOfConversationService(id, user.userId);
+  const result = await getAllMessagesOfConversationService(id, req.account.roleId);
 
   if (result.isSuccess) {
     return res.status(result.statusCode).json({

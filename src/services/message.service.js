@@ -1,4 +1,4 @@
-const { Message, Conversation, User } = require("../models");
+const { Message, Conversation, User, UserConversation } = require("../models");
 
 const createMessageService = async (userId, content, conversationId) => {
   try {
@@ -25,22 +25,45 @@ const createMessageService = async (userId, content, conversationId) => {
   }
 }
 
-const getAllMessagesOfConversationService = async (conversationId) => {
+const getAllMessagesOfConversationService = async (conversationId, roleId) => {
+  console.log("🚀 ~ file: message.service.js:29 ~ getAllMessagesOfConversationService ~ roleId:", roleId)
   try {
-    const allMessage = await Message.findAll({
-      where: {
-        conversationId
-      },
-      include: [
-        User,
-        Conversation
-      ]
-    });
+    if (roleId !== 3) {
+      const allMessage = await Message.findAll({
+        where: {
+          conversationId
+        },
+        include: [
+          User,
+          Conversation
+        ]
+      });
 
-    return {
-      allMessage,
-      statusCode: 200,
-      isSuccess: true,
+      return {
+        allMessage,
+        statusCode: 200,
+        isSuccess: true,
+      }
+    } else {
+      const userConversation = await UserConversation.findOne({
+        where: {
+          conversationId
+        }
+      })
+
+      const allMessage = await Message.findAll({
+        where: {
+          conversationId: userConversation.conversationId
+        },
+        include: [
+          User
+        ]
+      })
+      return {
+        statusCode: 200,
+        isSuccess: true,
+        allMessage
+      }
     }
   } catch (error) {
     console.log("🚀 ~ file: message.service.js:26 ~ getAllMessagesOfConversationService ~ error:", error)
