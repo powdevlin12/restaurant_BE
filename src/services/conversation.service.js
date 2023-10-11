@@ -1,4 +1,4 @@
-const { Conversation, UserConversation, User } = require("../models");
+const { Conversation, UserConversation, User, Message } = require("../models");
 
 const createConversationService = async () => {
   try {
@@ -77,8 +77,37 @@ const getMembersInConversationService = async (conversationId) => {
   }
 }
 
+const getAllMessagesOfClientServer = async (userId) => {
+  try {
+    const userConversation = await UserConversation.findOne({
+      where: {
+        userId
+      }
+    })
+
+    const messages = await Message.findAll({
+      where: {
+        conversationId: userConversation.conversationId
+      }
+    })
+    return {
+      isSuccess: true,
+      data: messages,
+      statusCode: 200
+    }
+  } catch (error) {
+    console.log("🚀 ~ file: conversation.service.js:84 ~ getAllMessagesOfClientServer ~ error:", error)
+    return {
+      isSuccess: false,
+      message: error.message,
+      statusCode: 500
+    }
+  }
+}
+
 module.exports = {
   createConversationService,
   acceptConversationServer,
-  getMembersInConversationService
+  getMembersInConversationService,
+  getAllMessagesOfClientServer
 }

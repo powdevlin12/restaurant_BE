@@ -1,4 +1,4 @@
-const { createConversationService, acceptConversationServer, getMembersInConversationService } = require("../services/conversation.service");
+const { createConversationService, acceptConversationServer, getMembersInConversationService, getAllMessagesOfClientServer } = require("../services/conversation.service");
 const { createMessageService, getAllMessagesOfConversationService } = require("../services/message.service");
 const { createUserConversationService, getConversationOfManager, getConversationOfClient } = require("../services/userConversation.service");
 
@@ -124,10 +124,30 @@ const getAllMessagesOfConversation = async (req, res, next) => {
   }
 };
 
+const getAllMessagesOfClient = async (req, res, next) => {
+  const user = req.user;
+  const result = await getAllMessagesOfClientServer(user.userId)
+
+  const { isSuccess, data, message, statusCode } = result
+
+  if (isSuccess) {
+    return res.status(200).json({
+      isSuccess,
+      data
+    })
+  }
+
+  return res.status(400).json({
+    isSuccess,
+    message
+  })
+}
+
 module.exports = {
   createConversation,
   getConversation,
   acceptConversation,
   getAllMessagesOfConversation,
-  getMembersInConversation
+  getMembersInConversation,
+  getAllMessagesOfClient
 }
