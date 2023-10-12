@@ -1,4 +1,6 @@
-const { Conversation, UserConversation, User } = require("../models");
+const { ERROR_CREATE, ERROR_NOT_FOUND, ERROR_SERVER } = require("../config/messages/error.message");
+const { SUCCESS_CREATE, SUCCESS_ACCEPT_CONVERSATION } = require("../config/messages/success.message");
+const { Conversation, UserConversation, User, Message } = require("../models");
 
 const createConversationService = async () => {
   try {
@@ -6,9 +8,9 @@ const createConversationService = async () => {
     if (conversation) {
       return {
         isSuccess: true,
-        message: "Tạo cuộc hội thoại thành công !",
-        conversation,
-      };
+        message: SUCCESS_CREATE,
+        conversation
+      }
     }
   } catch (error) {
     console.log(
@@ -17,8 +19,8 @@ const createConversationService = async () => {
     );
     return {
       isSuccess: false,
-      message: "Tạo cuộc hội thoại thất bại !",
-    };
+      message: ERROR_CREATE
+    }
   }
 };
 
@@ -37,14 +39,14 @@ const acceptConversationServer = async (conversationId, managerId) => {
       if (newUserConversation) {
         return {
           isSuccess: true,
-          message: "Chấp nhận cuộc hội thoại thành công",
-        };
+          message: SUCCESS_ACCEPT_CONVERSATION,
+        }
       }
     } else {
       return {
         isSuccess: false,
-        message: "Không tìm thấy đoạn hội thoại này !",
-      };
+        message: ERROR_NOT_FOUND,
+      }
     }
   } catch (error) {
     console.log(
@@ -53,8 +55,8 @@ const acceptConversationServer = async (conversationId, managerId) => {
     );
     return {
       isSuccess: false,
-      message: error.message,
-    };
+      message: ERROR_SERVER,
+    }
   }
 };
 
@@ -79,8 +81,36 @@ const getMembersInConversationService = async (conversationId) => {
     );
     return {
       isSuccess: false,
-      message: error.message,
-    };
+      message: ERROR_NOT_FOUND
+    }
+  }
+}
+
+const getAllMessagesOfClientServer = async (userId) => {
+  try {
+    const userConversation = await UserConversation.findOne({
+      where: {
+        userId
+      }
+    })
+
+    const messages = await Message.findAll({
+      where: {
+        conversationId: userConversation.conversationId
+      }
+    })
+    return {
+      isSuccess: true,
+      data: messages,
+      statusCode: 200
+    }
+  } catch (error) {
+    console.log("🚀 ~ file: conversation.service.js:84 ~ getAllMessagesOfClientServer ~ error:", error)
+    return {
+      isSuccess: false,
+      message: ERROR_NOT_FOUND,
+      statusCode: 500
+    }
   }
 };
 
@@ -88,4 +118,5 @@ module.exports = {
   createConversationService,
   acceptConversationServer,
   getMembersInConversationService,
-};
+  getAllMessagesOfClientServer
+}

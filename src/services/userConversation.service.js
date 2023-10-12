@@ -1,3 +1,4 @@
+const { ERROR_SERVER } = require("../config/messages/error.message");
 const { UserConversation, Conversation, User } = require("../models");
 const { Op } = require("sequelize");
 
@@ -37,12 +38,8 @@ const getConversationOfManager = async (userId) => {
           },
         ],
       },
-      include: [
-        Conversation,
-        User
-      ]
-    })
-
+      include: [Conversation, User],
+    });
 
     const listConversationsPromise = conversations.map((item) =>
       getUserByConversationIdService(item.conversationId)
@@ -50,12 +47,17 @@ const getConversationOfManager = async (userId) => {
 
     const result = Promise.all(listConversationsPromise)
       .then((values) => {
-        console.log("🚀 ~ file: userConversation.service.js:48 ~ .then ~ values:", values)
-        const finalData = []
-        values.forEach(conversation => {
-          conversation.map((item) => finalData.push({ user: item.User, conversation: item.Conversation }))
+        console.log(
+          "🚀 ~ file: userConversation.service.js:48 ~ .then ~ values:",
+          values
+        );
+        const finalData = [];
+        values.forEach((conversation) => {
+          conversation.map((item) =>
+            finalData.push({ user: item.User, conversation: item.Conversation })
+          );
         });
-        return finalData.filter(item => item.user.userId !== userId);
+        return finalData.filter((item) => item.user.userId !== userId);
       })
       .catch((err) => {
         console.log(
@@ -75,7 +77,7 @@ const getConversationOfManager = async (userId) => {
     );
     return {
       isSuccess: false,
-      message: error.message,
+      message: ERROR_SERVER,
     };
   }
 };
@@ -96,7 +98,7 @@ const getConversationOfClient = async (userId) => {
     );
     return {
       isSuccess: false,
-      message: error.message,
+      message: ERROR_SERVER,
     };
   }
 };
@@ -107,11 +109,8 @@ const getUserByConversationIdService = (conversationId) => {
       where: {
         conversationId,
       },
-      include: [
-        User,
-        Conversation
-      ]
-    })
+      include: [User, Conversation],
+    });
 
     if (conversations) {
       resolve(conversations);

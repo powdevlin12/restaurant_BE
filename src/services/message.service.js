@@ -1,4 +1,6 @@
-const { Message, Conversation, User } = require("../models");
+const { ERROR_CREATE, ERROR_SERVER } = require("../config/messages/error.message");
+const { SUCCESS_CREATE } = require("../config/messages/success.message");
+const { Message, Conversation, User, UserConversation } = require("../models");
 
 const createMessageService = async (userId, content, conversationId) => {
   try {
@@ -11,7 +13,7 @@ const createMessageService = async (userId, content, conversationId) => {
     if (message) {
       return {
         isSuccess: true,
-        message: "Tạo tin nhắn thành công",
+        message: SUCCESS_CREATE,
         statusCode: 201,
       };
     }
@@ -19,26 +21,52 @@ const createMessageService = async (userId, content, conversationId) => {
     console.log(error);
     return {
       isSuccess: false,
-      message: "Tạo tin nhắn thất bại, lỗi server",
+      message: ERROR_CREATE,
       statusCode: 500,
     };
   }
 };
 
-const getAllMessagesOfConversationService = async (conversationId) => {
+const getAllMessagesOfConversationService = async (conversationId, roleId) => {
+  console.log("🚀 ~ file: message.service.js:29 ~ getAllMessagesOfConversationService ~ roleId:", roleId)
   try {
-    const allMessage = await Message.findAll({
-      where: {
-        conversationId,
-      },
-      include: [User, Conversation],
-    });
+    if (roleId !== 3) {
+      const allMessage = await Message.findAll({
+        where: {
+          conversationId
+        },
+        include: [
+          User,
+          Conversation
+        ]
+      });
 
-    return {
-      allMessage,
-      statusCode: 200,
-      isSuccess: true,
-    };
+      return {
+        allMessage,
+        statusCode: 200,
+        isSuccess: true,
+      }
+    } else {
+      const userConversation = await UserConversation.findOne({
+        where: {
+          conversationId
+        }
+      })
+
+      const allMessage = await Message.findAll({
+        where: {
+          conversationId: userConversation.conversationId
+        },
+        include: [
+          User
+        ]
+      })
+      return {
+        statusCode: 200,
+        isSuccess: true,
+        allMessage
+      }
+    }
   } catch (error) {
     console.log(
       "🚀 ~ file: message.service.js:26 ~ getAllMessagesOfConversationService ~ error:",
@@ -46,7 +74,7 @@ const getAllMessagesOfConversationService = async (conversationId) => {
     );
     return {
       isSuccess: false,
-      message: "Tải thất bại lỗi server",
+      message: ERROR_SERVER,
       statusCode: 500,
     };
   }
