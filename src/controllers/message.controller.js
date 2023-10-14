@@ -11,6 +11,7 @@ const createMessage = async (req, res, next) => {
   );
 
   return res.status(result.statusCode).json({
+    isSuccess: result.isSuccess,
     message: result.message,
   });
 };
