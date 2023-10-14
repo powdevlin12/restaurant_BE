@@ -100,7 +100,7 @@ const acceptConversation = async (req, res, next) => {
   } else {
     return res.status(500).json({
       isSuccess: false,
-      message: "Manager chấp nhận tin nhắn từ khách hàng thất bại !",
+      message: result.message,
     });
   }
 };

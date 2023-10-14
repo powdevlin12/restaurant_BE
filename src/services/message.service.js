@@ -14,7 +14,7 @@ const createMessageService = async (userId, content, conversationId) => {
       return {
         isSuccess: true,
         message: SUCCESS_CREATE,
-        statusCode: 201,
+        statusCode: 200,
       };
     }
   } catch (error) {
