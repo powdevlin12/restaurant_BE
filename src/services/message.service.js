@@ -7,15 +7,15 @@ const createMessageService = async (userId, content, conversationId) => {
     const message = await Message.create({
       content,
       userId,
-      conversationId
-    })
+      conversationId,
+    });
 
     if (message) {
       return {
         isSuccess: true,
         message: SUCCESS_CREATE,
-        statusCode: 201,
-      }
+        statusCode: 200,
+      };
     }
   } catch (error) {
     console.log(error);
@@ -23,9 +23,9 @@ const createMessageService = async (userId, content, conversationId) => {
       isSuccess: false,
       message: ERROR_CREATE,
       statusCode: 500,
-    }
+    };
   }
-}
+};
 
 const getAllMessagesOfConversationService = async (conversationId, roleId) => {
   console.log("🚀 ~ file: message.service.js:29 ~ getAllMessagesOfConversationService ~ roleId:", roleId)
@@ -68,16 +68,19 @@ const getAllMessagesOfConversationService = async (conversationId, roleId) => {
       }
     }
   } catch (error) {
-    console.log("🚀 ~ file: message.service.js:26 ~ getAllMessagesOfConversationService ~ error:", error)
+    console.log(
+      "🚀 ~ file: message.service.js:26 ~ getAllMessagesOfConversationService ~ error:",
+      error
+    );
     return {
       isSuccess: false,
       message: ERROR_SERVER,
       statusCode: 500,
-    }
+    };
   }
-}
+};
 
 module.exports = {
   createMessageService,
-  getAllMessagesOfConversationService
-}
+  getAllMessagesOfConversationService,
+};

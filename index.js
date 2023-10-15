@@ -121,8 +121,8 @@ io.on("connection", (socket) => {
 
 io.use((socket, next) => {
   socket.on("disconnect", () => {
-    console.log('disconnect successfully', socket.id)
-  })
+    console.log("disconnect successfully", socket.id);
+  });
 
   return next();
-})
+});
