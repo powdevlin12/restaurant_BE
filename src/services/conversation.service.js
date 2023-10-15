@@ -101,9 +101,11 @@ const getAllMessagesOfClientServer = async (userId) => {
     })
     return {
       isSuccess: true,
-      data: messages,
-      statusCode: 200
-    }
+      data: {
+        allMessage: messages,
+      },
+      statusCode: 200,
+    };
   } catch (error) {
     console.log("🚀 ~ file: conversation.service.js:84 ~ getAllMessagesOfClientServer ~ error:", error)
     return {
