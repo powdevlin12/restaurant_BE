@@ -47,10 +47,6 @@ const getConversationOfManager = async (userId) => {
 
     const result = Promise.all(listConversationsPromise)
       .then((values) => {
-        console.log(
-          "🚀 ~ file: userConversation.service.js:48 ~ .then ~ values:",
-          values
-        );
         const finalData = [];
         values.forEach((conversation) => {
           conversation.map((item) =>
