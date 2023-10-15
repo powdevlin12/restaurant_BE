@@ -94,7 +94,9 @@ const getAllMessagesOfClientServer = async (userId) => {
     })
     return {
       isSuccess: true,
-      data: messages,
+      data: {
+        allMessage: messages
+      },
       statusCode: 200
     }
   } catch (error) {
