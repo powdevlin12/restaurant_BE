@@ -29,6 +29,9 @@ const createConversation = async (req, res, next) => {
       return res.status(200).json({
         isSuccess: true,
         message: "Bắt đầu nhắn tin thành công !",
+        data: {
+          coversationId: conversationResult.conversation.conversationId
+        }
       });
     }
   } catch (error) {
