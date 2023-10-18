@@ -4,6 +4,14 @@ const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const nodemailer = require("nodemailer");
+const {
+  ERROR_SERVER,
+  LOGIN_SUCCESS,
+} = require("../config/messages/success.message");
+
+const {
+  LOGIN_E001,
+} = require("../config/messages/error.message");
 
 const createClientWithTransaction = async (
   phone,
@@ -150,19 +158,20 @@ const login = async (req, res) => {
         role: role.name,
         roleId: role.roleId,
         isSuccess: true,
+        msg: LOGIN_SUCCESS,
         accessToken: token,
         expireTime: 24 * 60 * 60,
       });
     } else {
       res.status(400).json({
         isSuccess: false,
-        msg: "Mật khẩu hoặc mật khẩu không đúng!",
+        msg: LOGIN_E001,
       });
     }
   } catch (error) {
     res.status(400).json({
       isSuccess: false,
-      msg: "Lỗi server!",
+      msg: ERROR_SERVER,
     });
   }
 };
