@@ -9,9 +9,7 @@ const {
   LOGIN_SUCCESS,
 } = require("../config/messages/success.message");
 
-const {
-  LOGIN_E001,
-} = require("../config/messages/error.message");
+const { LOGIN_E001 } = require("../config/messages/error.message");
 
 const createClientWithTransaction = async (
   phone,
