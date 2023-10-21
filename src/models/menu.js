@@ -16,13 +16,14 @@ module.exports = (sequelize, DataTypes) => {
   }
   Menu.init(
     {
+      menuId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
+      },
       date: {
         type: DataTypes.DATE,
-        allowNull: false,
-        primaryKey: true,
-      },
-      price: {
-        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
