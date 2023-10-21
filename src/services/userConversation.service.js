@@ -39,6 +39,7 @@ const getConversationOfManager = async (userId) => {
         ],
       },
       include: [Conversation, User],
+      order: [['updatedAt', 'DESC']]
     });
 
     const listConversationsPromise = conversations.map((item) =>
