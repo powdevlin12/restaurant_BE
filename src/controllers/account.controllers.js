@@ -9,8 +9,8 @@ const {
   LOGIN_SUCCESS,
 } = require("../config/messages/success.message");
 
-const { LOGIN_E001 } = require("../config/messages/error.message");
-const { regexPassword } = require("../utils/regex");
+const { LOGIN_E001, VALIDATE_PHONE_E002, VALIDATE_PASSWORD_E002, VALIDATE_CONFIRMPASSWORD_E002 } = require("../config/messages/error.message");
+const { regexPassword, regexPhoneVN } = require("../utils/regex");
 
 const createClientWithTransaction = async (
   phone,
@@ -80,7 +80,7 @@ const createClientWithTransaction = async (
 
 const createAccountForClient = async (req, res) => {
   try {
-    const { phone, email, password, userName, gender, address, birthDay } =
+    const { phone, email, password, confirmPassword, userName, gender, address, birthDay } =
       req.body;
     if (
       phone === "" ||
@@ -100,7 +100,21 @@ const createAccountForClient = async (req, res) => {
     if (!regexPassword.test(password)) {
       return res.status(400).json({
         isSuccess: false,
-        msg: "Mật khẩu tối thiểu 6 kí tự, có chứa chữ hoa, chữ thường và kí tự số !",
+        msg: VALIDATE_PASSWORD_E002,
+      });
+    }
+
+    if (!regexPhoneVN.test(phone)) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: VALIDATE_PHONE_E002,
+      });
+    }
+
+    if (confirmPassword !== password) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: VALIDATE_CONFIRMPASSWORD_E002,
       });
     }
 
