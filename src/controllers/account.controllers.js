@@ -133,8 +133,15 @@ const createAccountForClient = async (req, res) => {
 };
 
 const login = async (req, res) => {
+
   try {
     const { login, password } = req.body;
+    if (!regexPassword.test(password)) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: "Mật khẩu tối thiểu 6 kí tự, có chứa chữ hoa, chữ thường và kí tự số !",
+      });
+    }
     const account = await Account.findOne({
       where: {
         [Op.or]: [{ phone: login }, { email: login }],
