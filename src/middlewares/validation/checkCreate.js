@@ -12,12 +12,18 @@ const checkCreateAccount = (Model) => {
       if (!account) {
         next();
       } else {
+        var msg = "";
+        if (account.phone === phone && account.email !== email) {
+          msg = "Số điện thoại đã được sử dụng";
+        } else if (account.phone !== phone && account.email === email) {
+          msg = "Email đã được sử dụng";
+        }
         res.status(409).json({
           data: {
             isExist: true,
           },
           isSuccess: false,
-          msg: "Số điện thoại hoặc email đã được sử dụng",
+          msg: msg !== "" ? msg : "Số điện thoại và email đã được sử dụng",
         });
       }
     } catch (error) {

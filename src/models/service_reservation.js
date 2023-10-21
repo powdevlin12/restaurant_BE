@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       serviceReservationId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true,
       },
       price: {
         type: DataTypes.INTEGER,
