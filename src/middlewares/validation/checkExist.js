@@ -1,5 +1,6 @@
 const { Account, User } = require("../../models");
 const { Op } = require("sequelize");
+const { ERROR_SERVER } = require("../../config/messages/error.message");
 
 const checkExistAccount = () => {
   return async (req, res, next) => {
@@ -33,7 +34,7 @@ const checkExistAccount = () => {
     } catch (error) {
       return res.status(500).send({
         isSuccess: false,
-        msg: "Có lỗi trong quá trình kiểm tra trùng tài khoản",
+        msg: ERROR_SERVER,
       });
     }
   };
@@ -42,8 +43,6 @@ const checkExistAccount = () => {
 const checkNotExistAccount = () => {
   return async (req, res, next) => {
     try {
-      console.log(1);
-      //const staff = req.staff
       const { login } = req.body;
 
       if (login === "") {
@@ -73,7 +72,7 @@ const checkNotExistAccount = () => {
     } catch (error) {
       return res.status(500).send({
         isSuccess: false,
-        msg: "Có lỗi trong quá trình tạo tài khoản",
+        msg: ERROR_SERVER,
       });
     }
   };

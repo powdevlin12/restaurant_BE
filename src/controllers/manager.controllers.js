@@ -15,12 +15,12 @@ const createDish = async (req, res) => {
     });
     res.status(200).json({
       isSuccess: true,
-      msg: "Tạo món thành công",
+      msg: isDrink ? "Tạo đồ uống thành công" : "Tạo món thành công",
     });
   } catch (error) {
     res.status(500).json({
       isSuccess: false,
-      msg: "Tạo món thất bại",
+      msg: isDrink ? "Tạo đồ uống thất bại" : "Tạo món thất bại",
     });
   }
 };
