@@ -126,3 +126,6 @@ io.use((socket, next) => {
 
   return next();
 });
+
+
+module.export = { app }

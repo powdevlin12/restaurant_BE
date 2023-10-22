@@ -1,5 +1,5 @@
 const { ERROR_SERVER } = require("../config/messages/error.message");
-const { UserConversation, Conversation, User } = require("../models");
+const { UserConversation, Conversation, User, Message } = require("../models");
 const { Op } = require("sequelize");
 
 const createUserConversationService = async (conversationId, userId) => {
@@ -39,6 +39,7 @@ const getConversationOfManager = async (userId) => {
         ],
       },
       include: [Conversation, User],
+      order: [['updatedAt', 'DESC']]
     });
 
     const listConversationsPromise = conversations.map((item) =>
@@ -105,7 +106,19 @@ const getUserByConversationIdService = (conversationId) => {
       where: {
         conversationId,
       },
-      include: [User, Conversation],
+      include: [
+        {
+          model: User,
+        },
+        {
+          model: Conversation,
+          include: {
+            model: Message,  // Include model "Message" within "Conversation"
+            order: [['updatedAt', 'DESC']], // Sắp xếp theo trường "updatedAt" giảm dần
+            limit: 1
+          },
+        }
+      ],
     });
 
     if (conversations) {

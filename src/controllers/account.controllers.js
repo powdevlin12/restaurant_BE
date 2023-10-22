@@ -9,7 +9,8 @@ const {
   LOGIN_SUCCESS,
 } = require("../config/messages/success.message");
 
-const { LOGIN_E001 } = require("../config/messages/error.message");
+const { LOGIN_E001, VALIDATE_PHONE_E002, VALIDATE_PASSWORD_E002, VALIDATE_CONFIRMPASSWORD_E002 } = require("../config/messages/error.message");
+const { regexPassword, regexPhoneVN } = require("../utils/regex");
 
 const createClientWithTransaction = async (
   phone,
@@ -79,7 +80,7 @@ const createClientWithTransaction = async (
 
 const createAccountForClient = async (req, res) => {
   try {
-    const { phone, email, password, userName, gender, address, birthDay } =
+    const { phone, email, password, confirmPassword, userName, gender, address, birthDay } =
       req.body;
     if (
       phone === "" ||
@@ -90,9 +91,30 @@ const createAccountForClient = async (req, res) => {
       address === "" ||
       birthDay === ""
     ) {
-      res.status(400).json({
+      return res.status(400).json({
         isSuccess: false,
         msg: "Cần nhập đủ các trường cần thiết!",
+      });
+    }
+
+    if (!regexPassword.test(password)) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: VALIDATE_PASSWORD_E002,
+      });
+    }
+
+    if (!regexPhoneVN.test(phone)) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: VALIDATE_PHONE_E002,
+      });
+    }
+
+    if (confirmPassword !== password) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: VALIDATE_CONFIRMPASSWORD_E002,
       });
     }
 
@@ -106,18 +128,18 @@ const createAccountForClient = async (req, res) => {
       birthDay
     );
     if (isSuccess) {
-      res.status(200).json({
+      return res.status(200).json({
         isSuccess: true,
         msg: `Mã xác minh đã được gửi về email: ${email}! Vui lòng kiểm tra hòm thư!`,
       });
     } else {
-      res.status(500).json({
+      return res.status(500).json({
         isSuccess: false,
         msg: "Lỗi đăng ký tài khoản!",
       });
     }
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       isSuccess: false,
       msg: "Lỗi đăng ký tài khoản!",
     });
@@ -125,8 +147,15 @@ const createAccountForClient = async (req, res) => {
 };
 
 const login = async (req, res) => {
+
   try {
     const { login, password } = req.body;
+    if (!regexPassword.test(password)) {
+      return res.status(400).json({
+        isSuccess: false,
+        msg: "Mật khẩu tối thiểu 6 kí tự, có chứa chữ hoa, chữ thường và kí tự số !",
+      });
+    }
     const account = await Account.findOne({
       where: {
         [Op.or]: [{ phone: login }, { email: login }],
