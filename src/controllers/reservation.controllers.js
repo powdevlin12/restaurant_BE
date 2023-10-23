@@ -146,7 +146,7 @@ const makeTableOfReservation = async (
         schedule: {
           [Op.between]: [startSchedule, endSchedule], //tìm những reservation mà thời gian diễn ra nằm trong khoảng này
         },
-        [Op.not]: [{ status: -1 }],
+        [Op.not]: { [Op.or]: [{ status: -1 }, { status: -2 }] },
       },
     });
     tables = await Table.findAll({
@@ -364,7 +364,7 @@ const getAllReservationFilterByUser = async (req, res) => {
     const status = req.query.status; //status filer: lọc theo status của reservation, ko có => all
     const limit = req.query.limit;
     const page = req.query.page;
-    const order = req.query.order; //order: thứ tự ngày tạo đơn đặt bàn
+    const order = req.query.order; //order: thứ tự ngày tạo yêu cầu đặt bàn
     const count = [limit * (page - 1), limit * page];
     let result;
     if (account.roleId == 3) {

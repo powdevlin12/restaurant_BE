@@ -63,7 +63,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const {
-  remindUnpaitReservationByEmail,
+  remindUnpaidReservationByEmail,
   deleteUnpaidReservation,
 } = require("./src/cronjob/reservation");
 
@@ -79,7 +79,7 @@ const job = new cron.CronJob("*/30 * * * * *", async () => {
 
 const remindJob = new cron.CronJob("*/15 * * * * *", async () => {
   // Mã thực hiện gửi mail nhắc nhở các reservation không được thanh toán phí trả trước mỗi 20 giây
-  await remindUnpaitReservationByEmail();
+  await remindUnpaidReservationByEmail();
 });
 
 // Bắt đầu công việc cron

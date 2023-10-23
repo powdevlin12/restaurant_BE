@@ -11,7 +11,7 @@ const { Op } = require("sequelize");
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 
-async function remindUnpaitReservationByEmail() {
+async function remindUnpaidReservationByEmail() {
   try {
     const date = moment().format("YYYY-MM-DD HH:mm:ss");
     let reservations = await Reservation.findAll({
@@ -176,6 +176,6 @@ async function deleteUnpaidReservation() {
 }
 
 module.exports = {
-  remindUnpaitReservationByEmail,
+  remindUnpaidReservationByEmail,
   deleteUnpaidReservation,
 };
