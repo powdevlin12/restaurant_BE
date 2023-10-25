@@ -136,16 +136,17 @@ const getAllMessagesOfClient = async (req, res, next) => {
 
   const { isSuccess, data, message, statusCode } = result
 
-  if (isSuccess) {
-    return res.status(200).json({
-      isSuccess,
-      data
-    })
-  }
+  // if (isSuccess) {
+  //   return res.status(200).json({
+  //     isSuccess,
+  //     data
+  //   })
+  // }
 
-  return res.status(400).json({
+  return res.status(200).json({
     isSuccess,
-    message
+    message,
+    data
   })
 }
 

@@ -1,4 +1,4 @@
-const { ERROR_CREATE, ERROR_NOT_FOUND, ERROR_SERVER } = require("../config/messages/error.message");
+const { ERROR_CREATE, ERROR_NOT_FOUND, ERROR_SERVER, CONVERSATION_NOT_FOUND } = require("../config/messages/error.message");
 const { SUCCESS_CREATE, SUCCESS_ACCEPT_CONVERSATION } = require("../config/messages/success.message");
 const { Conversation, UserConversation, User, Message } = require("../models");
 
@@ -93,6 +93,11 @@ const getAllMessagesOfClientServer = async (userId) => {
         userId
       }
     })
+
+    if (!userConversation) return {
+      isSuccess: false,
+      message: CONVERSATION_NOT_FOUND
+    }
 
     const messages = await Message.findAll({
       where: {
