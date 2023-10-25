@@ -95,9 +95,12 @@ const getAllMessagesOfClientServer = async (userId) => {
     })
 
     if (!userConversation) return {
-      isSuccess: false,
-      message: CONVERSATION_NOT_FOUND
-    }
+      isSuccess: true,
+      message: CONVERSATION_NOT_FOUND,
+      data: {
+        allMessage: []
+      },
+    };
 
     const messages = await Message.findAll({
       where: {

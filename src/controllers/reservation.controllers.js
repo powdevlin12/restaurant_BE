@@ -11,6 +11,10 @@ const {
 } = require("../models");
 const db = require("../models/index");
 const { Op } = require("sequelize");
+const {
+  MAKE_RESERVATION_E001,
+  ERROR_SERVER,
+} = require("../config/messages/error.message");
 
 const makeServiceOfReservation = async (
   reservationId,
@@ -43,7 +47,7 @@ const makeServiceOfReservation = async (
     }
   } catch (error) {
     isSuccess3 = false;
-    msgMakeService = "Lỗi tạo service";
+    msgMakeService = ERROR_SERVER;
   }
   return {
     isSuccess3,
@@ -109,7 +113,7 @@ const makeMenuOfReservation = async (
     }
   } catch (error) {
     isSuccess2 = false;
-    msgMakeMenu = "Lỗi tạo menu";
+    msgMakeMenu = ERROR_SERVER;
   }
   return {
     isSuccess2,
@@ -204,7 +208,7 @@ const makeTableOfReservation = async (
     if (needTables.length < countTable) {
       return {
         isSuccess: false,
-        msgFillTable: "Không đủ bàn! Hãy thử loại bàn khác!",
+        msgFillTable: MAKE_RESERVATION_E001,
       };
     }
     for (let element of needTables) {
@@ -224,7 +228,7 @@ const makeTableOfReservation = async (
     }
   } catch (error) {
     isSuccess = false;
-    msgFillTable = "Lỗi khi đặt bàn!";
+    msgFillTable = ERROR_SERVER;
   }
   return {
     isSuccess,
@@ -347,7 +351,7 @@ const createReservation = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       isSuccess: false,
-      msg: "Đặt bàn thất bại: " + msgReservation,
+      msg: ERROR_SERVER,
     });
   }
 };
@@ -466,7 +470,7 @@ const getAllReservationFilterByUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ isSuccess: false, msg: "Thất bại!" });
+    res.status(500).json({ isSuccess: false, msg: ERROR_SERVER });
   }
 };
 
@@ -562,9 +566,7 @@ const getDetailReservation = async (req, res) => {
       data: { reservation },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ isSuccess: false, msg: "Lỗi khi lấy thông tin đặt bàn!" });
+    res.status(500).json({ isSuccess: false, msg: ERROR_SERVER });
   }
 };
 
