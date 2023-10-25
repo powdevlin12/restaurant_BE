@@ -364,7 +364,7 @@ const getAllReservationFilterByUser = async (req, res) => {
     const status = req.query.status; //status filer: lọc theo status của reservation, ko có => all
     const limit = req.query.limit;
     const page = req.query.page;
-    const order = req.query.order; //order: thứ tự ngày tạo yêu cầu đặt bàn
+    const order = req.query.order; //order: thứ tự ngày diễn ra yêu cầu đặt bàn
     const count = [limit * (page - 1), limit * page];
     let result;
     if (account.roleId == 3) {
@@ -376,7 +376,7 @@ const getAllReservationFilterByUser = async (req, res) => {
           },
           offset: count[0],
           limit: count[1] - count[0],
-          order: [["createAt", order]],
+          order: [["schedule", order]],
           attributes: [
             "reservationId",
             "schedule",
@@ -393,7 +393,7 @@ const getAllReservationFilterByUser = async (req, res) => {
           },
           offset: count[0],
           limit: count[1] - count[0],
-          order: [["createAt", order]],
+          order: [["schedule", order]],
           attributes: [
             "reservationId",
             "schedule",
@@ -409,7 +409,8 @@ const getAllReservationFilterByUser = async (req, res) => {
         result = await Reservation.findAndCountAll({
           offset: count[0],
           limit: count[1] - count[0],
-          order: [["createAt", order]],
+          order: [["schedule", order]],
+
           attributes: [
             "reservationId",
             "schedule",
@@ -426,7 +427,7 @@ const getAllReservationFilterByUser = async (req, res) => {
           },
           offset: count[0],
           limit: count[1] - count[0],
-          order: [["createAt", order]],
+          order: [["schedule", order]],
           attributes: [
             "reservationId",
             "schedule",

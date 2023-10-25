@@ -153,7 +153,7 @@ const login = async (req, res) => {
     if (!regexPassword.test(password)) {
       return res.status(400).json({
         isSuccess: false,
-        msg: "Mật khẩu tối thiểu 6 kí tự, có chứa chữ hoa, chữ thường và kí tự số !",
+        msg: "Mật khẩu tối thiểu 6 kí tự, có chứa chữ hoa, chữ thường và kí tự số!",
       });
     }
     const account = await Account.findOne({
