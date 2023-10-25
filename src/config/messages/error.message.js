@@ -25,6 +25,7 @@ const VALIDATE_PHONE_E001 = "Vui lòng nhập số điện thoại"
 const VALIDATE_PHONE_E002 = "Số điện thoại chỉ chứa 10 chữ số"
 const VALIDATE_USERNAME_E001 = "Vui lòng nhập họ và tên"
 const VALIDATE_ADDRESS_E001 = "Vui lòng nhập địa chỉ"
+const CONVERSATION_NOT_FOUND = "Chưa có đoạn tin nhắn nào"
 
 module.exports = {
   ERROR_CREATE,
@@ -51,5 +52,6 @@ module.exports = {
   VALIDATE_PASSWORD_E002,
   VALIDATE_PASSWORD_E001,
   VALIDATE_LOGIN_E002,
-  VALIDATE_LOGIN_E001
+  VALIDATE_LOGIN_E001,
+  CONVERSATION_NOT_FOUND
 };
