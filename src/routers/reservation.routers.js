@@ -12,7 +12,7 @@ const reservationRouter = express.Router();
 reservationRouter.post("/create", authenticate, createReservation)
   .get("/get/all", authenticate, getAllReservationFilterByUser)
   .get("/get/detail/:reservationId", authenticate, getDetailReservation)
-  .patch('/cacel-reservation', authenticate, cancelReservation)
+  .patch('/cancel', authenticate, cancelReservation)
 
 module.exports = {
   reservationRouter,

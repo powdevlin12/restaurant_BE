@@ -15,6 +15,7 @@ const {
   MAKE_RESERVATION_E001,
   ERROR_SERVER,
 } = require("../config/messages/error.message");
+const { reservationService } = require("../services/reservation.service");
 
 const makeServiceOfReservation = async (
   reservationId,
@@ -370,8 +371,8 @@ const createReservation = async (req, res) => {
 const cancelReservation = async (req, res) => {
   try {
     const { reservation_id } = req.body
-
-    const result = await reservationService.cancelReservation(reservation_id)
+    const user = req.user
+    const result = await reservationService.cancelReservation(reservation_id, user)
     return res.json(
       result
     )
