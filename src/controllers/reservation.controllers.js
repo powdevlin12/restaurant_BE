@@ -15,6 +15,7 @@ const {
   MAKE_RESERVATION_E001,
   ERROR_SERVER,
 } = require("../config/messages/error.message");
+const { reservationService } = require("../services/reservation.service");
 
 const makeServiceOfReservation = async (
   reservationId,
@@ -153,13 +154,17 @@ const makeTableOfReservation = async (
         [Op.not]: { [Op.or]: [{ status: -1 }, { status: -3 }] },
       },
     });
+    // => [1,2,3,4,5,6]
+
     tables = await Table.findAll({
       where: {
         tableTypeId: tableTypeId,
       },
       include: [{ model: TableType }],
     });
-    //khai báo array chứa reservationIdOfReservations
+
+    // => [1,3,4,5,6,7]
+    //khai báo array chứa reservationIdOfReservations là id của các reservation trong khoảng giờ khách đặt mà chưa thanh toán
     let reservationIdOfReservations = [];
     for (let element of reservations) {
       // console.log(reservations.indexOf(reservation), reservation.dataValues);
@@ -253,7 +258,9 @@ const createReservation = async (req, res) => {
       schedule,
       tableTypeId,
       countGuest,
+      refundFee
     } = req.body;
+    console.log("🚀 ~ file: reservation.controllers.js:262 ~ createReservation ~ req.body:", req.body)
     let now = new Date(Date.now());
     const account = req.account;
     const user = await User.findOne({
@@ -272,9 +279,11 @@ const createReservation = async (req, res) => {
           note: note,
           status: -2,
           createAt: now,
+          refundFee
         },
         { transaction: transaction }
       );
+      console.log("🚀 ~ file: reservation.controllers.js:285 ~ createReservation ~ reservation:", reservation)
       //check available & fill table
       let { isSuccess, msgFillTable, preFeeTable } =
         await makeTableOfReservation(
@@ -299,6 +308,8 @@ const createReservation = async (req, res) => {
         drinkQuantities,
         transaction
       );
+      console.log("🚀 ~ file: reservation.controllers.js:304 ~ createReservation ~ isSuccess2:", isSuccess2)
+
       if (!isSuccess2) {
         msgReservation = msgMakeMenu;
         throw new Error();
@@ -333,6 +344,7 @@ const createReservation = async (req, res) => {
       await reservation.save({ transaction: transaction });
       await transaction.commit();
     } catch (error) {
+      console.log("🚀 ~ file: reservation.controllers.js:340 ~ createReservation ~ error:", error.message)
       await transaction.rollback();
       return res.status(500).json({
         isSuccess: false,
@@ -355,6 +367,23 @@ const createReservation = async (req, res) => {
     });
   }
 };
+
+const cancelReservation = async (req, res) => {
+  try {
+    const { reservation_id } = req.body
+    const user = req.user
+    const result = await reservationService.cancelReservation(reservation_id, user)
+    return res.json(
+      result
+    )
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      isSuccess: false,
+      message: error.message,
+    })
+  }
+}
 
 const getAllReservationFilterByUser = async (req, res) => {
   try {
@@ -576,4 +605,5 @@ module.exports = {
   createReservation,
   getAllReservationFilterByUser,
   getDetailReservation,
+  cancelReservation
 };

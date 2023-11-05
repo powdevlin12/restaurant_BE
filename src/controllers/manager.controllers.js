@@ -4,6 +4,9 @@ const createDish = async (req, res) => {
   const { name, description, price, image, dishTypeId, isDrink, unit } =
     req.body;
   try {
+    const { name, description, price, image, dishTypeId, isDrink, unit } =
+      req.body;
+    console.log("🚀 ~ file: manager.controllers.js:6 ~ createDish ~ isDrink:", isDrink)
     const newDish = await Dish.create({
       name: name,
       description: description,
