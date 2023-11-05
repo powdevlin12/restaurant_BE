@@ -96,7 +96,7 @@ const acceptConversation = async (req, res, next) => {
   const result = await acceptConversationServer(id, user.userId);
 
   if (result.isSuccess) {
-    return res.status(201).json({
+    return res.status(200).json({
       isSuccess: true,
       message: result.message,
     });

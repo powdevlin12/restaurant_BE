@@ -150,7 +150,7 @@ const makeTableOfReservation = async (
         schedule: {
           [Op.between]: [startSchedule, endSchedule], //tìm những reservation mà thời gian diễn ra nằm trong khoảng này
         },
-        [Op.not]: { [Op.or]: [{ status: -1 }, { status: -2 }] },
+        [Op.not]: { [Op.or]: [{ status: -1 }, { status: -3 }] },
       },
     });
     tables = await Table.findAll({
@@ -551,12 +551,14 @@ const getDetailReservation = async (req, res) => {
       include: [
         {
           model: Service,
-          attributes: ["unit"],
+          attributes: ["name", "unit"],
         },
       ],
     });
     reservation.dataValues.services = serviceReservation;
     reservation.dataValues.services.forEach((element) => {
+      element.dataValues.name = element.dataValues.Service.name;
+      element.dataValues.priceStr = element.dataValues.price.toLocaleString();
       element.dataValues.unit = element.dataValues.Service.unit;
       delete element.dataValues.Service;
     });

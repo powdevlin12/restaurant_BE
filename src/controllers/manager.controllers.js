@@ -1,9 +1,9 @@
 const { Reservation, Dish, Service } = require("../models");
 
 const createDish = async (req, res) => {
+  const { name, description, price, image, dishTypeId, isDrink, unit } =
+    req.body;
   try {
-    const { name, description, price, image, dishTypeId, isDrink, unit } =
-      req.body;
     const newDish = await Dish.create({
       name: name,
       description: description,
