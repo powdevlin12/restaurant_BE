@@ -601,9 +601,26 @@ const getDetailReservation = async (req, res) => {
   }
 };
 
+const ChangeSchedule = async (req, res) => {
+  const user = req.user
+  const { reservationId } = req.params
+  const { newSchedule } = req.body
+  try {
+    const result = await reservationService.changeSchedule(reservationId, newSchedule, user)
+    return res.json(result)
+  } catch (error) {
+    console.log("🚀 ~ file: reservation.controllers.js:612 ~ ChangeSchedule ~ error:", error)
+    return res.json({
+      isSuccess: false,
+      message: error.message,
+    })
+  }
+}
+
 module.exports = {
   createReservation,
   getAllReservationFilterByUser,
   getDetailReservation,
-  cancelReservation
+  cancelReservation,
+  ChangeSchedule
 };

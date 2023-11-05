@@ -76,6 +76,43 @@ class ReservationService {
     }
   }
 
+  changeSchedule = async (reservation_id, newSchedule, user) => {
+    const reservation = await this.findReservationById(reservation_id)
+    const { userId, schedule, status } = reservation
+
+    if (user.userId !== userId) {
+      throw new Error("You are not a reservation agent")
+    }
+
+    const timeUpdated = new Date()
+
+    const distanceNowToSchedule = Math.ceil((new Date(schedule) - timeUpdated) / 1000 / 3600)
+
+    if (distanceNowToSchedule < 24) {
+      throw new Error("You can not change schedule because schedule close (24 hours)")
+    }
+
+    const distanceNowToNewSchedule = Math.ceil((new Date(newSchedule) - timeUpdated) / 1000 / 3600)
+    console.log("🚀 ~ file: reservation.service.js:96 ~ ReservationService ~ changeSchedule= ~ distanceNowToNewSchedule:", distanceNowToNewSchedule)
+    if (distanceNowToNewSchedule < 12) {
+      throw new Error("You can not change new schedule because schedule close (12 hours)")
+    }
+
+    const statusInvalid = [-3, -1, 2]
+    if (statusInvalid.includes(status)) {
+      throw new Error("You can not change schedule")
+    }
+
+    const updatedSchedule = await this.updateReservation(reservation_id, {
+      schedule: newSchedule
+    })
+
+    return {
+      data: updatedSchedule,
+      message: 'Change Schedule successfully !',
+      isSuccess: true
+    }
+  }
 }
 
 const reservationService = new ReservationService();
