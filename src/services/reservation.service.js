@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { Reservation } = require("../models");
 
 class ReservationService {
@@ -101,6 +102,22 @@ class ReservationService {
     const statusInvalid = [-3, -1, 2]
     if (statusInvalid.includes(status)) {
       throw new Error("You can not change schedule")
+    }
+
+    let startSchedule = new Date(new Date(newSchedule).getTime() - 4 * 60 * 60 * 1000);
+    let endSchedule = new Date(new Date(newSchedule).getTime() + 4 * 60 * 60 * 1000);
+
+    const reservations = await Reservation.findAll({
+      where: {
+        schedule: {
+          [Op.between]: [startSchedule, endSchedule], //tìm những reservation mà thời gian diễn ra nằm trong khoảng này
+        },
+        [Op.not]: { [Op.or]: [{ status: -1 }, { status: -3 }] },
+      },
+    });
+
+    if (reservations?.length > 0) {
+      throw new Error("You can not change schedule because this table not available")
     }
 
     const updatedSchedule = await this.updateReservation(reservation_id, {
