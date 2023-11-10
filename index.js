@@ -14,6 +14,7 @@ const morgan = require("morgan");
 const { Server } = require("socket.io");
 const { SocketServer } = require("./src/SocketServer");
 
+require('dotenv').config()
 app.use(cookieParser());
 app.use(cors());
 
