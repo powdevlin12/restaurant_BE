@@ -47,10 +47,10 @@
     "sha256": "^0.2.0",
     "socket.io": "^4.7.2",
     "store": "^2.0.12",
-    "supertest": "^6.3.3"
-  },
-  "devDependencies": {
+    "supertest": "^6.3.3",
     "morgan": "^1.10.0",
     "sequelize-cli": "^6.6.1"
+  },
+  "devDependencies": {
   }
 }
