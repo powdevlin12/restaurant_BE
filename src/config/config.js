@@ -16,13 +16,12 @@ const config = {
     dialect: "mysql"
   },
   production: {
-    sername: process.env.DB_USERNAME_PRODUCTION,
+    username: process.env.DB_USERNAME_PRODUCTION,
     password: process.env.DB_PASSWORD_PRODUCTION,
     database: process.env.DB_DATABASE_NAME_PRODUCTION,
     host: process.env.DB_HOST_PRODUCTION,
     dialect: "mysql",
-    logging: false,
-    timezone: "+07:00"
+    port: 37844
   }
 }
 
