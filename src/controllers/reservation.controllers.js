@@ -532,6 +532,8 @@ const getDetailReservation = async (req, res) => {
     delete reservation.dataValues.User;
     reservation.dataValues.preFeeStr =
       reservation.dataValues.preFee.toLocaleString();
+    reservation.dataValues.refundFeeStr =
+      reservation.dataValues.refundFee.toLocaleString();
     let menuReservation = await Menu_Reservation.findAll({
       where: {
         reservationId: reservation.reservationId,
